@@ -1,0 +1,7 @@
+# NOTE: Nix flakes only see git-tracked files. hosts/nixos/hardware-configuration.nix
+# MUST be committed (or at least `git add`ed) or `nixos-rebuild --flake` won't find it.
+
+result
+result-*
+*.swp
+.direnv/
