@@ -435,6 +435,290 @@
     '';
   };
 
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; [
+      bbenoist.nix
+      ms-python.python
+      ms-python.debugpy
+      ms-python.vscode-python-envs
+      waderyan.gitblame
+      charliermarsh.ruff
+    ];
+    profiles.default = {
+      userSettings = {
+        # Editor: Behavior
+        "editor.copyWithSyntaxHighlighting" = false;
+        "diffEditor.ignoreTrimWhitespace" = false;
+        "editor.emptySelectionClipboard" = true;
+        "editor.snippetSuggestions" = "top";
+        "editor.suggest.showSnippets" = true;
+        "editor.detectIndentation" = false;
+        "editor.tabSize" = 4;
+        "editor.largeFileOptimizations" = false;
+        "editor.hover.delay" = 300;
+        "editor.inlayHints.enabled" = "offUnlessPressed";
+        "editor.gotoLocation.multipleDefinitions" = "goto";
+        "editor.gotoLocation.multipleImplementations" = "goto";
+        "editor.gotoLocation.multipleReferences" = "goto";
+        "editor.gotoLocation.multipleDeclarations" = "goto";
+        "editor.gotoLocation.multipleTypeDefinitions" = "goto";
+
+        # Editor: Appearance / hide unused UI
+        "editor.minimap.enabled" = false;
+        "editor.glyphMargin" = false;
+        "editor.guides.indentation" = false;
+        "editor.lineNumbers" = "off";
+        "workbench.editor.showTabs" = "none";
+        "breadcrumbs.enabled" = false;
+        "workbench.tree.renderIndentGuides" = "none";
+        "editor.matchBrackets" = "never";
+        "editor.colorDecorators" = false;
+        "editor.lightbulb.enabled" = "onCode";
+        "editor.selectionHighlight" = false;
+        "editor.overviewRulerBorder" = false;
+        "editor.renderLineHighlight" = "none";
+        "editor.occurrencesHighlight" = "off";
+        "editor.renderControlCharacters" = false;
+        "editor.hideCursorInOverviewRuler" = true;
+        "workbench.editor.enablePreview" = false;
+        "workbench.editor.enablePreviewFromQuickOpen" = false;
+        "workbench.tips.enabled" = false;
+        "workbench.tree.indent" = 16;
+
+        # Editor: Font / cursor
+        "editor.unicodeHighlight.ambiguousCharacters" = true;
+        "editor.cursorBlinking" = "solid";
+        "editor.fontLigatures" = true;
+        "editor.fontSize" = 13;
+        "editor.lineHeight" = 1.6;
+        "editor.fontFamily" = "MonoLisa, monospace";
+
+        # Files
+        "files.trimTrailingWhitespace" = true;
+        "files.insertFinalNewline" = true;
+        "files.trimFinalNewlines" = true;
+        "files.exclude" = {
+          "**/.git" = true;
+          "**/.svn" = true;
+          "**/.hg" = true;
+          "**/CVS" = true;
+          "**/.DS_Store" = true;
+          "**/Thumbs.db" = true;
+          "**/*.pyc" = true;
+          "**/__pycache__" = true;
+          "**/*.egg-info" = true;
+          "**/.direnv/" = true;
+          "**/.ruff_cache" = true;
+          "**/.pytest_cache" = true;
+          "**/node_modules/" = true;
+        };
+        "files.watcherExclude" = {
+          "**/node_modules/**" = true;
+          "**/__pycache__/**" = true;
+          "**/venv/**" = true;
+        };
+        "files.associations" = {
+          "*.html" = "html";
+          "*.twig" = "html";
+          "*.module" = "php";
+        };
+
+        # Explorer
+        "explorer.compactFolders" = false;
+        "explorer.confirmDelete" = false;
+        "explorer.confirmDragAndDrop" = false;
+        "explorer.excludeGitIgnore" = true;
+
+        # Search
+        "search.useIgnoreFiles" = false;
+        "search.exclude" = {
+          "**/*.po" = true;
+          "**/*.pot" = true;
+          "**/example_*/" = true;
+          "**/*.js.map" = true;
+          "public/base" = true;
+          "**/storage/webassets/" = true;
+          "**/ckanext-*/site/" = true;
+          "**/node_modules/" = true;
+          "**/dist/" = true;
+          "**/venv/" = true;
+          "**/.venv/" = true;
+        };
+
+        # Git / SCM
+        "git.decorations.enabled" = true;
+        "git.openRepositoryInParentFolders" = "never";
+        "scm.diffDecorations" = "all";
+        "problems.decorations.enabled" = true;
+
+        # Terminal
+        "terminal.integrated.fontSize" = 14;
+        "terminal.integrated.lineHeight" = 1.5;
+
+        # Window
+        "window.zoomLevel" = 3;
+        "window.title" = "\${dirty}\${activeEditorMedium}\${separator}\${rootNameShort}";
+        "window.newWindowDimensions" = "inherit";
+        "window.controlsStyle" = "hidden";
+        "window.commandCenter" = false;
+        "window.menuBarVisibility" = "compact";
+
+        # Workbench
+        "workbench.colorTheme" = "Ocean Green: Dark";
+        "workbench.experimental.modernUI" = false;
+        "workbench.startupEditor" = "none";
+        "workbench.sideBar.location" = "right";
+        "workbench.activityBar.location" = "hidden";
+        "workbench.navigationControl.enabled" = false;
+        "workbench.browser.showInTitleBar" = false;
+        "workbench.layoutControl.enabled" = false;
+        "workbench.editorActionsLocation" = "hidden";
+        "workbench.editorLargeFileConfirmation" = 25;
+        "workbench.editorAssociations" = {
+          "*.copilotmd" = "vscode.markdown.preview.editor";
+          "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc" = "default";
+          "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.ui" = "default";
+          "*.qrc" = "qt-core.qrcEditor";
+        };
+
+        # Remote
+        "remote.autoForwardPortsSource" = "hybrid";
+
+        # Chat / Copilot
+        "chat.titleBar.openInAgentsWindow.enabled" = false;
+        "chat.viewSessions.orientation" = "stacked";
+        "chat.titleBar.signIn.enabled" = false;
+
+        # Custom UI Style (extension: custom-ui-style)
+        "custom-ui-style.stylesheet" = {
+          ".quick-input-widget" = "top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; border-radius: 0 !important; box-shadow: none !important;";
+          ".quick-input-widget .monaco-inputbox" = "border-radius: 0 !important";
+          ".quick-input-list .scrollbar" = "display: none";
+          ".window-appicon" = "display: none;";
+          ".watermark-container .letterpress" = "display: none;";
+          ".editor-widget.find-widget" = "border: 1px solid #d3d3d3; border-top: unset; box-shadow: unset";
+          ".notification-toast" = "box-shadow: none !important";
+          ".editor-actions" = "display: none";
+          ".agent-status-badge-section" = "display: none";
+          ".agent-status-badge-section .menu-entry" = "display: none";
+          ".monaco-action-bar .action-item .codicon" = "display: none; !important";
+        };
+
+        # Python
+        "python.analysis.logLevel" = "Information";
+        "python.analysis.autoImportCompletions" = true;
+        "python.analysis.typeCheckingMode" = "standard";
+        "python.analysis.indexing" = false;
+        "python.analysis.extraPaths" = [
+          "./ckan"
+          "./ckanext-blocksmith"
+          "./ckanext-mailcraft"
+          "./ckanext-admin-panel"
+          "./ckanext-harvest"
+          "./ckanext-harvest-basket"
+          "./ckanext-dcat"
+          "./ckanext-spatial"
+          "./ckanext-scheming"
+          "./ckanext-xloader"
+          "./ckanext-toolbelt"
+          "./ckanext-doi"
+          "./ckanext-resource-docs"
+          "./ckanext-cdp-iar"
+          "./ckanext-dataset-series"
+          "./ckanext-drupal-idp"
+          "./ckanext-drupal-api"
+          "./ckanext-tables"
+          "./ckanext-transmute"
+          "./ckanext-syndicate"
+          "./ckanext-files"
+          "./ckanext-better-stats"
+          "./ckanext-event-audit"
+          "./ckanext-knowledge-assistant"
+          "./ckanext-theming"
+          "./ckanext-portal-core"
+          "./ckanext-portal-activity"
+          "./ckanext-portal-revision"
+          "./ckanext-bulk"
+          "./ckanext-ingest"
+          "./ckanext-search-autocomplete"
+          "./ckanext-unfold"
+          "./../ckan"
+        ];
+        "ruff.configuration" = "/home/cherry/projects/pyproject.toml";
+
+        # Language-specific formatters
+        "[html]"."editor.defaultFormatter" = "vscode.html-language-features";
+        "[rust]"."editor.defaultFormatter" = "rust-lang.rust-analyzer";
+        "[json]"."editor.defaultFormatter" = "vscode.json-language-features";
+        "[javascript]"."editor.defaultFormatter" = "vscode.typescript-language-features";
+        "[javascriptreact]"."editor.defaultFormatter" = "vscode.typescript-language-features";
+        "[less]"."editor.defaultFormatter" = "vscode.css-language-features";
+        "[python]"."editor.defaultFormatter" = "charliermarsh.ruff";
+        "[scss]"."editor.defaultFormatter" = "vscode.css-language-features";
+        "[css]"."editor.defaultFormatter" = "vscode.css-language-features";
+        "[yml]" = {
+          "editor.formatOnSave" = false;
+          "editor.autoIndent" = "advanced";
+        };
+      };
+
+      keybindings = [
+        # Text Editing
+        { key = "ctrl+alt+backspace"; command = "deleteWordPartLeft"; }
+
+        # Search
+        { key = "alt+f"; command = "workbench.action.quickTextSearch"; }
+
+        # Toggles
+        {
+          key = "alt+k alt+k";
+          command = "toggle";
+          when = "editorTextFocus";
+          args = {
+            id = "fontSize";
+            value = [
+              { "editor.fontSize" = 13; "editor.lineHeight" = 1.6; }
+              { "editor.fontSize" = 10; "editor.lineHeight" = 1; }
+            ];
+          };
+        }
+
+        # File Explorer
+        { key = "alt+n"; command = "explorer.newFile"; when = "explorerViewletVisible && filesExplorerFocus && !inputFocus"; }
+        { key = "alt+shift+n"; command = "explorer.newFolder"; when = "explorerViewletVisible && filesExplorerFocus && !inputFocus"; }
+        { key = "alt+r"; command = "workbench.files.action.refreshFilesExplorer"; when = "explorerViewletVisible && filesExplorerFocus && !inputFocus"; }
+
+        # Fold & Unfold
+        { key = "shift+alt+["; command = "editor.fold"; when = "editorFocus"; }
+        { key = "shift+alt+]"; command = "editor.unfold"; when = "editorFocus"; }
+
+        # Split Panels
+        { key = "shift+alt+-"; command = "workbench.action.joinAllGroups"; when = "editorFocus"; }
+        { key = "shift+alt+="; command = "workbench.action.splitEditor"; when = "editorFocus"; }
+        { key = "shift+alt+right"; command = "workbench.action.navigateRight"; when = "editorFocus"; }
+        { key = "shift+alt+left"; command = "workbench.action.navigateLeft"; when = "editorFocus"; }
+
+        # Formatting
+        { key = "ctrl+shift+i"; command = "editor.action.formatDocument"; }
+
+        # Open DevTools
+        { key = "alt+ctrl+i"; command = "workbench.action.toggleDevTools"; }
+
+        # Hide Toaster Notifications
+        { key = "escape"; command = "notifications.hideToasts"; when = "notificationToastsVisible"; }
+
+        # View / Panel Navigation
+        { key = "shift+ctrl+g"; command = "workbench.view.scm"; }
+        { key = "shift+ctrl+e"; command = "workbench.view.explorer"; }
+        { key = "ctrl+shift+d"; command = "dockerContainers.focus"; }
+        { key = "ctrl+shift+b"; command = "workbench.view.debug"; }
+        { key = "ctrl+shift+x"; command = "workbench.view.extensions"; }
+        { key = "ctrl+shift+p"; command = "workbench.action.showCommands"; }
+      ];
+    };
+  };
+
   programs.git = {
     enable = true;
 

@@ -119,8 +119,6 @@
     file
     which
 
-    vscode
-
     claude-code
   ];
 
