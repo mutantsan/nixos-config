@@ -87,10 +87,12 @@
     isNormalUser = true;
     description = "kiwi";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
     ];
   };
+
+  virtualisation.docker.enable = true;
 
   programs.firefox.enable = true;
   programs.zsh.enable = true;
