@@ -134,6 +134,28 @@
 
   # List services that you want to enable:
 
+  # Fn-row -> media keys
+  services.keyd = {
+    enable = true;
+    keyboards.default = {
+      ids = [ "*" ];
+      settings.main = {
+        brightnessdown = "f1";
+        brightnessup = "f2";
+        scale = "f3";
+        dashboard = "f4";
+        kbdillumdown = "f5";
+        kbdillumup = "f6";
+        previoussong = "f7";
+        playpause = "f8";
+        nextsong = "f9";
+        mute = "f10";
+        volumedown = "f11";
+        volumeup = "f12";
+      };
+    };
+  };
+
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
 
