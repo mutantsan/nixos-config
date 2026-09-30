@@ -27,6 +27,11 @@
     pkgs.eza
     pkgs.bat
     pkgs.delta
+    pkgs.jq
+    pkgs.rustup
+    pkgs.uv
+    pkgs.nodejs
+    pkgs.fnm
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -436,4 +441,14 @@
     settings.user.name = "Oleksandr Cherniavskyi";
     settings.user.email = "kvaqich@gmail.com";
 };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+  };
+
+  # No home-manager module for fnm exists yet; hook it manually.
+  programs.zsh.initContent = ''
+    eval "$(fnm env --use-on-cd --shell zsh)"
+  '';
 }
