@@ -21,7 +21,7 @@
     # # environment:
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
-    # '')i
+    # '')
     pkgs.fzf
     pkgs.zoxide
     pkgs.eza
@@ -68,6 +68,69 @@
   programs.home-manager.enable = true;
 
   programs.zsh.enable = true;
+
+  programs.pyenv = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
+  programs.atuin = {
+    enable = true;
+    enableZshIntegration = true;
+    settings = {
+      history_filter = [
+        "^cd$"
+        "^cd \\.\\.$"
+        "^pwd$"
+
+        "^ls$"
+        "^ll$"
+        "^tls$"
+
+        "^ga$"
+        "^ga \\.$"
+        "^gc$"
+        "^gco \\.$"
+        "^gco [^ ]+$"
+        "^gadd$"
+
+        "^gs$"
+        "^gl$"
+        "^gp$"
+
+        "^npm ci$"
+        "^npm i$"
+        "^npm run .+$"
+
+        "^jb$"
+      ];
+      search_mode = "fuzzy";
+      style = "full";
+      theme.name = "everforest";
+      search.filters = [ "global" "session" "workspace" "directory" ];
+      sync.records = true;
+      enter_accept = false;
+    };
+    themes.everforest = {
+      theme.name = "everforest";
+      colors = {
+        AlertInfo = "#a7c080";
+        AlertWarn = "#dbbc7f";
+        AlertError = "#e67e80";
+        Annotation = "#9da9a0";
+        Base = "#d3c6aa";
+        Guidance = "#7fbbb3";
+        Important = "#e09d7f";
+        Title = "#83c092";
+      };
+    };
+  };
 
   programs.git = {
     enable = true;
