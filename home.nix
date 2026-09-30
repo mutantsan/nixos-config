@@ -47,6 +47,12 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+
+    # XDG default-terminal spec (xdg-terminal-exec and terminal-aware apps
+    # read this to pick a terminal emulator).
+    ".config/xdg-terminals.list".text = ''
+      foot.desktop
+    '';
   };
 
   # Home Manager can also manage your environment variables through
@@ -67,6 +73,7 @@
   #
   home.sessionVariables = {
     EDITOR = "nvim";
+    TERMINAL = "foot";
   };
 
   # Let Home Manager install and manage itself.
@@ -75,6 +82,8 @@
   programs.zsh.enable = true;
 
   programs.zsh.shellAliases = {
+    "ll" = ''eza -la'';
+
     "g" = ''git'';
 
     "ga" = ''git add'';
@@ -252,6 +261,30 @@
   programs.pyenv = {
     enable = true;
     enableZshIntegration = true;
+  };
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    # Alt-C: fuzzy-cd into any dir under $HOME (not just from $PWD)
+    changeDirWidgetCommand = ''
+      fd -t d --follow \
+        -E .git \
+        -E .direnv \
+        -E node_modules \
+        -E __pycache__ \
+        -E .cargo \
+        -E .nvm \
+        -E .npm \
+        -E .pyenv \
+        -E .ipython \
+        -E .cache \
+        -E .vscode \
+        -E .rustup \
+        -E .steam \
+        -E go/pkg/ \
+        . "$HOME"
+    '';
   };
 
   programs.direnv = {
@@ -437,15 +470,15 @@
 
   programs.vscode = {
     enable = true;
-    extensions = with pkgs.vscode-extensions; [
-      bbenoist.nix
-      ms-python.python
-      ms-python.debugpy
-      ms-python.vscode-python-envs
-      waderyan.gitblame
-      charliermarsh.ruff
-    ];
     profiles.default = {
+      extensions = with pkgs.vscode-extensions; [
+        bbenoist.nix
+        ms-python.python
+        ms-python.debugpy
+        ms-python.vscode-python-envs
+        waderyan.gitblame
+        charliermarsh.ruff
+      ];
       userSettings = {
         # Editor: Behavior
         "editor.copyWithSyntaxHighlighting" = false;
