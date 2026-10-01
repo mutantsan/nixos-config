@@ -46,7 +46,7 @@
             content.show-hotkey-overlay = [];
           };
 
-          "Mod+Return".spawn-sh = lib.getExe pkgs.kitty;
+          "Mod+Return".spawn-sh = lib.getExe pkgs.ghostty;
           "Mod+S".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
 
           "Mod+O" = _: {

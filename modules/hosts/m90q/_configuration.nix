@@ -146,7 +146,6 @@
     tree
     file
     which
-    foot
 
     claude-code
   ];
