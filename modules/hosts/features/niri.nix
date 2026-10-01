@@ -11,7 +11,11 @@
       inherit pkgs;
       settings = {
         spawn-at-startup = [
-          (lib.getExe self'.packages.myNoctalia)
+          [
+            "${pkgs.bash}/bin/bash"
+            "-c"
+            ''cp -f "${self'.packages.noctaliaSettingsJson}" "$HOME/.config/noctalia/settings.json" && exec "${lib.getExe self'.packages.myNoctalia}"''
+          ]
         ];
 
         xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
@@ -19,6 +23,17 @@
         input.keyboard.xkb.layout = "us,ua";
 
         layout.gaps = 5;
+        layout.default-column-width.proportion = 1.0;
+
+        animations.off = _: {};
+
+        workspaces = {
+          "1" = _: {};
+          "2" = _: {};
+          "3" = _: {};
+          "4" = _: {};
+          "5" = _: {};
+        };
 
         # Intel iGPU drives the only connected display; the NVIDIA dGPU (PCI
         # 2:0:0, PRIME-offload only) must never be niri's render node or
