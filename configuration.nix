@@ -2,28 +2,15 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      inputs.nixarchy.nixosModules.nixarchy
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  programs.nixarchy.enable = true;
-  programs.nixarchy.bootSplash = "force";
-  # Plasma6 and nixarchy both set services.displayManager.sddm.theme at
-  # mkDefault priority ("breeze" vs "omarchy"), so they conflict outright.
-  services.displayManager.sddm.theme = lib.mkForce "omarchy";
-  services.displayManager.defaultSession = lib.mkForce "omarchy";
-
-  # nixarchy pins its own Hyprland and doesn't defer to an existing one;
-  # keep ours (anything from 0.55 satisfies nixarchy).
-  programs.hyprland.package = lib.mkForce pkgs.hyprland;
-  programs.hyprland.portalPackage = lib.mkForce pkgs.xdg-desktop-portal-hyprland;
 
   hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
 
@@ -110,12 +97,16 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.libinput.enable = true;
 
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."kiwi" = {
     isNormalUser = true;
     description = "kiwi";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" "docker" "input" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
     ];
   };
@@ -127,6 +118,11 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+  ];
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).

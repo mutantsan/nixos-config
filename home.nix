@@ -1,9 +1,6 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, ... }:
 
 {
-  imports = [ inputs.nixarchy.homeManagerModules.nixarchy ];
-  programs.nixarchy.enable = true;
-
   home.username = "kiwi";
   home.homeDirectory = "/home/kiwi";
 
@@ -43,6 +40,35 @@
     # read this to pick a terminal emulator).
     ".config/xdg-terminals.list".text = ''
       foot.desktop
+    '';
+
+    ".config/foot/foot.ini".text = ''
+      [main]
+      include=~/.local/state/omarchy/current/theme/foot.ini
+      term=xterm-256color
+      font=FiraCode Nerd Font:size=11
+      pad=14x14
+      initial-window-mode=windowed
+      workers=0
+
+      [scrollback]
+      lines=10000
+      multiplier=7.0
+
+      [cursor]
+      style=block
+      blink=no
+
+      [key-bindings]
+      clipboard-copy=Control+Insert Control+Shift+c XF86Copy
+      primary-paste=none
+      clipboard-paste=Shift+Insert Control+Shift+v XF86Paste
+
+      [text-bindings]
+      # Send Shift+Return as CSI-u so TUIs can distinguish it from Return.
+      \x1b[13;2u=Shift+Return
+      # Send Alt+Shift+Return as CSI-u so tmux can match M-S-Enter.
+      \x1b[13;4u=Mod1+Shift+Return
     '';
   };
 
