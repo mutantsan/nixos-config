@@ -2,14 +2,42 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      <home-manager/nixos>
+      inputs.nixarchy.nixosModules.nixarchy
     ];
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  programs.nixarchy.enable = true;
+  programs.nixarchy.bootSplash = "force";
+  # Plasma6 and nixarchy both set services.displayManager.sddm.theme at
+  # mkDefault priority ("breeze" vs "omarchy"), so they conflict outright.
+  services.displayManager.sddm.theme = lib.mkForce "omarchy";
+  services.displayManager.defaultSession = lib.mkForce "omarchy";
+
+  # nixarchy pins its own Hyprland and doesn't defer to an existing one;
+  # keep ours (anything from 0.55 satisfies nixarchy).
+  programs.hyprland.package = lib.mkForce pkgs.hyprland;
+  programs.hyprland.portalPackage = lib.mkForce pkgs.xdg-desktop-portal-hyprland;
+
+  hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
+
+  # Intel + NVIDIA (ThinkCentre M90q). Bus IDs read from sysfs:
+  # Intel 0000:00:02.0 -> PCI:0:2:0, NVIDIA 0000:02:00.0 -> PCI:2:0:0.
+  hardware.nvidia.prime = {
+    offload.enable = true;
+    offload.enableOffloadCmd = true; # gives you `nvidia-offload <cmd>`
+    intelBusId = "PCI:0:2:0";
+    nvidiaBusId = "PCI:2:0:0";
+  };
+  # This GPU (0x1cb6, Maxwell-Volta era) predates the open kernel modules,
+  # so it needs the legacy driver series, which pins the kernel it builds against.
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
@@ -87,7 +115,7 @@
     isNormalUser = true;
     description = "kiwi";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "input" ];
     packages = with pkgs; [
     ];
   };

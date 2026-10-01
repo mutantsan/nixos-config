@@ -1,6 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
+  imports = [ inputs.nixarchy.homeManagerModules.nixarchy ];
+  programs.nixarchy.enable = true;
+
   home.username = "kiwi";
   home.homeDirectory = "/home/kiwi";
 
@@ -10,18 +13,6 @@
   home.stateVersion = "25.11";
 
   home.packages = [
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
-
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
     pkgs.fzf
     pkgs.zoxide
     pkgs.eza
@@ -622,21 +613,7 @@
         "chat.titleBar.openInAgentsWindow.enabled" = false;
         "chat.viewSessions.orientation" = "stacked";
         "chat.titleBar.signIn.enabled" = false;
-
-        # Custom UI Style (extension: custom-ui-style)
-        "custom-ui-style.stylesheet" = {
-          ".quick-input-widget" = "top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; border-radius: 0 !important; box-shadow: none !important;";
-          ".quick-input-widget .monaco-inputbox" = "border-radius: 0 !important";
-          ".quick-input-list .scrollbar" = "display: none";
-          ".window-appicon" = "display: none;";
-          ".watermark-container .letterpress" = "display: none;";
-          ".editor-widget.find-widget" = "border: 1px solid #d3d3d3; border-top: unset; box-shadow: unset";
-          ".notification-toast" = "box-shadow: none !important";
-          ".editor-actions" = "display: none";
-          ".agent-status-badge-section" = "display: none";
-          ".agent-status-badge-section .menu-entry" = "display: none";
-          ".monaco-action-bar .action-item .codicon" = "display: none; !important";
-        };
+        "chat.disableAIFeatures" = true;
 
         # Python
         "python.analysis.logLevel" = "Information";
@@ -645,6 +622,7 @@
         "python.analysis.indexing" = false;
         "python.analysis.extraPaths" = [
           "./ckan"
+          "./../ckan"
           "./ckanext-blocksmith"
           "./ckanext-mailcraft"
           "./ckanext-admin-panel"
@@ -676,7 +654,6 @@
           "./ckanext-ingest"
           "./ckanext-search-autocomplete"
           "./ckanext-unfold"
-          "./../ckan"
         ];
         "ruff.configuration" = "/home/cherry/projects/pyproject.toml";
 
