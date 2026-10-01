@@ -1,18 +1,19 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
 { config, pkgs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      ./_hardware-configuration.nix
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
+
+  # Without this, NixOS never loads the nvidia kernel module and nouveau
+  # binds the dGPU instead, which breaks PRIME offload and is what niri
+  # was accidentally rendering through.
+  services.xserver.videoDrivers = [ "nvidia" ];
 
   # Intel + NVIDIA (ThinkCentre M90q). Bus IDs read from sysfs:
   # Intel 0000:00:02.0 -> PCI:0:2:0, NVIDIA 0000:02:00.0 -> PCI:2:0:0.
@@ -25,10 +26,13 @@
   # This GPU (0x1cb6, Maxwell-Volta era) predates the open kernel modules,
   # so it needs the legacy driver series, which pins the kernel it builds against.
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+  # legacy_580 is >=560, where NixOS requires this to be set explicitly;
+  # Maxwell/Volta don't support the open kernel modules (Turing+ only).
+  hardware.nvidia.open = false;
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
-  home-manager.users.kiwi = import ./home.nix;
+  home-manager.users.kiwi = import ./_home.nix;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
