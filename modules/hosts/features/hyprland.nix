@@ -2,8 +2,8 @@
 #
 # The compositor config is plain Lua in ./_hypr (Hyprland >= 0.55), ported from
 # Omarchy 4.0.4's defaults plus the personal overrides. Omarchy's own shell is
-# not here: Waybar, Fuzzel, Mako, Hyprlock and Hypridle stand in for its bar,
-# menu, notifications and lock screen, and the hypr-* scripts below replace the
+# not here: Waybar, Vicinae (plus Fuzzel for the small pickers), Mako, Hyprlock
+# and Hypridle stand in for its bar, menu, notifications and lock screen, and the hypr-* scripts below replace the
 # omarchy-* commands the bindings used to call.
 { ... }: {
   flake.nixosModules.hyprland = { pkgs, lib, ... }:
@@ -281,6 +281,21 @@
             }
           '';
 
+          # SUPER + SPACE launcher. Its server is started from _hypr/autostart.lua
+          # (see the note on Waybar below), so the systemd unit stays off.
+          programs.vicinae = {
+            enable = true;
+            settings = {
+              theme = {
+                dark.name = "nord";
+                light.name = "nord";
+              };
+              launcher_window.rounding = 0;
+              pop_to_root_on_close = true;
+            };
+          };
+
+          # Still behind the dmenu-style pickers (power menu, keybindings, clipboard).
           programs.fuzzel = {
             enable = true;
             settings = {

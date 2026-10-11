@@ -14,8 +14,8 @@ o.bind("SUPER + CTRL + T", "Activity", apps.terminal .. " -e btop")
 o.bind("F1", "Dropdown terminal", "hypr-dropdown-terminal")
 
 -- Menus.
-o.bind("SUPER + SPACE", "Launcher", "pkill -x fuzzel || fuzzel")
-o.bind("SUPER + ALT + SPACE", "Launcher", "pkill -x fuzzel || fuzzel")
+o.bind("SUPER + SPACE", "Launcher", "vicinae toggle")
+o.bind("SUPER + ALT + SPACE", "Launcher", "vicinae toggle")
 o.bind("SUPER + ESCAPE", "System menu", "hypr-power-menu")
 o.bind("XF86PowerOff", "System menu", "hypr-power-menu", { locked = true })
 o.bind("SUPER + K", "Keybindings", "hypr-keybindings")

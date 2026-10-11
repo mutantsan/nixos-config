@@ -8,6 +8,7 @@ hl.on("hyprland.start", function()
   -- Shell layer.
   hl.exec_cmd("waybar")
   hl.exec_cmd("mako")
+  hl.exec_cmd("vicinae server")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("hyprsunset")
   hl.exec_cmd("hypr-wallpaper")
