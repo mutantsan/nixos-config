@@ -45,6 +45,5 @@ end
 o.bind("SUPER + C", "Universal copy", universal_clipboard_shortcut("CTRL", "C", "CTRL", "Insert"))
 o.bind("SUPER + X", "Universal cut", send_shortcut_once("CTRL", "X"))
 
--- SUPER + V opens the clipboard manager instead of Omarchy's universal paste.
-o.bind("SUPER + V", "Clipboard manager", "hypr-clipboard")
-o.bind("SUPER + CTRL + V", "Clipboard manager", "hypr-clipboard")
+-- SUPER + V opens Noctalia's clipboard panel
+o.bind("SUPER + V", "Clipboard manager", "noctalia msg panel-toggle clipboard")

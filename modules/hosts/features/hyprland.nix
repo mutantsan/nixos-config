@@ -1,14 +1,7 @@
-# Hyprland with the look, input and keybindings of the Omarchy machine.
-#
-# The compositor config is plain Lua in ./_hypr (Hyprland >= 0.55), ported from
-# Omarchy 4.0.4's defaults plus the personal overrides. Omarchy's own shell is
-# not here: Waybar, Vicinae (plus Fuzzel for the small pickers), Mako, Hyprlock
-# and Hypridle stand in for its bar, menu, notifications and lock screen, and the hypr-* scripts below replace the
-# omarchy-* commands the bindings used to call.
-{ ... }: {
+{ inputs, ... }: {
   flake.nixosModules.hyprland = { pkgs, lib, ... }:
     let
-      # Nord, the theme active on the Omarchy machine. Hex without the leading #.
+      # Nord theme
       colors = {
         background = "2e3440";
         surface = "3b4252";
@@ -128,50 +121,6 @@
           '';
         };
 
-        idleToggle = pkgs.writeShellApplication {
-          name = "hypr-idle-toggle";
-          runtimeInputs = with pkgs; [ hypridle libnotify procps util-linux ];
-          text = ''
-            if pkill -x hypridle; then
-              notify-send -t 2000 "Locking on idle off"
-            else
-              setsid -f hypridle >/dev/null 2>&1
-              notify-send -t 2000 "Locking on idle on"
-            fi
-          '';
-        };
-
-        # SUPER + V. Uses clipboard-manager-ms (github.com/mutantsan/clipboard-manager,
-        # built with cargo) when it is installed, and cliphist + fuzzel otherwise.
-        clipboard = pkgs.writeShellApplication {
-          name = "hypr-clipboard";
-          runtimeInputs = with pkgs; [ cliphist fuzzel wl-clipboard coreutils ];
-          text = ''
-            bin="$HOME/.cargo/bin/clipboard-manager-ms"
-
-            if [ "''${1:-}" = "--daemon" ]; then
-              if [ -x "$bin" ]; then
-                exec "$bin"
-              fi
-              exit 0
-            fi
-
-            if [ -x "$bin" ]; then
-              # Single-instance guard: refocus an already open clipboard window.
-              lock="''${XDG_DATA_HOME:-$HOME/.local/share}/clipboard-manager/ui.lock"
-              if [ -f "$lock" ] && kill -0 "$(cat "$lock")" 2>/dev/null; then
-                hyprctl dispatch 'hl.dsp.focus({ window = "class:floating.clipboard" })' >/dev/null
-                exit 0
-              fi
-
-              exec ${apps.terminal} --class=floating.clipboard --title="Clipboard Manager" -e "$bin" --ui
-            fi
-
-            selection=$(cliphist list | fuzzel --dmenu --width 70 --prompt "Clipboard  ") || exit 0
-            printf '%s' "$selection" | cliphist decode | wl-copy
-          '';
-        };
-
         # F1. Respawns the terminal if it was closed, so F1 always brings one back.
         dropdownTerminal = pkgs.writeShellApplication {
           name = "hypr-dropdown-terminal";
@@ -206,42 +155,21 @@
             done
           '';
         };
-
-        # Uses ~/Pictures/Wallpapers/wallpaper.* when present, a flat color otherwise.
-        wallpaper = pkgs.writeShellApplication {
-          name = "hypr-wallpaper";
-          runtimeInputs = with pkgs; [ swaybg ];
-          text = ''
-            for file in "$HOME"/Pictures/Wallpapers/wallpaper.*; do
-              if [ -f "$file" ]; then
-                exec swaybg -m fill -i "$file"
-              fi
-            done
-
-            exec swaybg -c "#${colors.background}"
-          '';
-        };
       };
     in
     {
       programs.hyprland.enable = true;
 
-      # hyprlock cannot check the password without its own PAM service.
-      security.pam.services.hyprlock = { };
-
       # Automounting removable drives (udiskie).
       services.udisks2.enable = true;
 
       environment.systemPackages = (builtins.attrValues scripts) ++ (with pkgs; [
-        hypridle
         hyprsunset
         hyprpicker
         hyprpolkitagent
-        swaybg
         grim
         slurp
         wl-clipboard
-        cliphist
         libnotify
         brightnessctl
         playerctl
@@ -252,9 +180,52 @@
       ]);
 
       home-manager.sharedModules = [
+        inputs.noctalia.homeModules.default
         {
-          # Each file is linked separately, so hyprlock.conf and settings.lua
-          # can sit next to them.
+          # Bar, notifications, launcher, clipboard, wallpaper, lock screen and
+          # idle handling. Started from _hypr/autostart.lua
+          # rather than systemd: without UWSM nothing activates
+          # graphical-session.target.
+          programs.noctalia = {
+            enable = true;
+            settings = {
+              theme = {
+                mode = "dark";
+                source = "builtin";
+                builtin = "Nord";
+              };
+
+              shell = {
+                font_family = font;
+                animation.enabled = false;
+              };
+
+              # Lock after 5 minutes, screen off 30 seconds later, never
+              # suspend. Locking before sleep is Noctalia's default.
+              idle.behavior = {
+                lock = {
+                  enabled = true;
+                  timeout = 300;
+                  action = "lock";
+                };
+                screen-off = {
+                  enabled = true;
+                  timeout = 330;
+                  action = "screen_off";
+                };
+              };
+
+              bar.main = {
+                position = "top";
+                start = [ "workspaces" "sysmon" ];
+                center = [ "clock" ];
+                end = [ "tray" "notifications" "volume" "brightness" "wallpaper" "control-center" ];
+              };
+            };
+          };
+
+          # Each file is linked separately, so settings.lua can sit next to
+          # them.
           xdg.configFile."hypr" = {
             source = ./_hypr;
             recursive = true;
@@ -281,14 +252,7 @@
             }
           '';
 
-          # SUPER + SPACE launcher. Its server is started from _hypr/autostart.lua
-          # (see the note on Waybar below), so the systemd unit stays off. Its
-          # settings.json is linked from ~/dotfiles in the host's _home.nix.
-          programs.vicinae = {
-            enable = true;
-          };
-
-          # Still behind the dmenu-style pickers (power menu, keybindings, clipboard).
+          # Still behind the dmenu-style pickers (power menu, keybindings).
           programs.fuzzel = {
             enable = true;
             settings = {
@@ -317,214 +281,6 @@
                 radius = 0;
               };
             };
-          };
-
-          services.mako = {
-            enable = true;
-            settings = {
-              font = "${font} 11";
-              anchor = "top-right";
-              width = 420;
-              margin = "20";
-              padding = "10";
-              border-size = 2;
-              border-radius = 0;
-              max-icon-size = 32;
-              default-timeout = 5000;
-              background-color = "#${colors.background}";
-              text-color = "#${colors.foreground}";
-              border-color = "#${colors.accent}";
-
-              "urgency=critical" = {
-                border-color = "#${colors.red}";
-                default-timeout = 0;
-              };
-
-              # SUPER + CTRL + comma.
-              "mode=do-not-disturb" = {
-                invisible = 1;
-              };
-            };
-          };
-
-          programs.hyprlock = {
-            enable = true;
-            settings = {
-              general = {
-                ignore_empty_input = true;
-              };
-
-              animations = {
-                enabled = false;
-              };
-
-              background = [
-                {
-                  monitor = "";
-                  color = "rgb(${colors.background})";
-                }
-              ];
-
-              input-field = [
-                {
-                  monitor = "";
-                  size = "650, 100";
-                  position = "0, 0";
-                  halign = "center";
-                  valign = "center";
-
-                  inner_color = "rgb(${colors.background})";
-                  outer_color = "rgb(${colors.accent})";
-                  outline_thickness = 4;
-
-                  font_family = font;
-                  font_color = "rgb(${colors.foreground})";
-
-                  placeholder_text = "Enter Password";
-                  check_color = "rgb(${colors.accent})";
-                  fail_color = "rgb(${colors.red})";
-                  fail_text = "<i>$FAIL ($ATTEMPTS)</i>";
-
-                  rounding = 0;
-                  shadow_passes = 0;
-                  fade_on_empty = false;
-                }
-              ];
-            };
-          };
-
-          # Started from _hypr/autostart.lua rather than systemd: without UWSM
-          # nothing activates graphical-session.target.
-          programs.waybar = {
-            enable = true;
-            settings.mainBar = {
-              layer = "top";
-              position = "top";
-              height = 26;
-              spacing = 0;
-
-              modules-left = [ "hyprland/workspaces" ];
-              modules-center = [ "clock" ];
-              modules-right = [
-                "tray"
-                "hyprland/language"
-                "bluetooth"
-                "network"
-                "pulseaudio"
-                "cpu"
-              ];
-
-              "hyprland/workspaces" = {
-                format = "{id}";
-                persistent-workspaces = {
-                  "1" = [ ];
-                  "2" = [ ];
-                  "3" = [ ];
-                  "4" = [ ];
-                  "5" = [ ];
-                };
-              };
-
-              clock = {
-                format = "{:%A %H:%M}";
-                format-alt = "{:%d %B W%V %Y}";
-                tooltip = false;
-              };
-
-              tray = {
-                icon-size = 12;
-                spacing = 12;
-              };
-
-              "hyprland/language" = {
-                format = "{short}";
-              };
-
-              bluetooth = {
-                format = "󰂯";
-                format-disabled = "󰂲";
-                format-connected = "󰂯";
-                tooltip-format = "Devices connected: {num_connections}";
-                on-click = "blueman-manager";
-              };
-
-              network = {
-                format-wifi = "󰖩";
-                format-ethernet = "󰈀";
-                format-disconnected = "󰖪";
-                tooltip-format-wifi = "{essid} ({signalStrength}%)";
-                tooltip-format-ethernet = "{ifname} {ipaddr}";
-                tooltip-format-disconnected = "Disconnected";
-                interval = 3;
-              };
-
-              pulseaudio = {
-                format = "{icon}";
-                format-muted = "󰖁";
-                format-icons.default = [ "󰕿" "󰖀" "󰕾" ];
-                tooltip-format = "Volume {volume}%";
-                scroll-step = 5;
-                on-click = "pavucontrol";
-                on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-              };
-
-              cpu = {
-                interval = 5;
-                format = "󰍛";
-                on-click = "${apps.terminal} -e btop";
-              };
-            };
-
-            style = ''
-              * {
-                background-color: #${colors.background};
-                color: #${colors.foreground};
-                border: none;
-                border-radius: 0;
-                min-height: 0;
-                font-family: "${font}";
-                font-size: 12px;
-              }
-
-              .modules-left {
-                margin-left: 8px;
-              }
-
-              .modules-right {
-                margin-right: 8px;
-              }
-
-              #workspaces button {
-                all: initial;
-                padding: 0 6px;
-                margin: 0 1.5px;
-                min-width: 9px;
-                color: #${colors.foreground};
-              }
-
-              #workspaces button.empty {
-                opacity: 0.5;
-              }
-
-              #workspaces button.active {
-                color: #${colors.accent};
-              }
-
-              #tray,
-              #language,
-              #bluetooth,
-              #network,
-              #pulseaudio,
-              #cpu {
-                min-width: 12px;
-                margin: 0 7.5px;
-              }
-
-              tooltip {
-                padding: 2px;
-                border: 1px solid #${colors.accent};
-              }
-            '';
           };
         }
       ];

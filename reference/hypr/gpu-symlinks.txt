@@ -1,2 +1,0 @@
-gpu-intel -> /dev/dri/by-path/pci-0000:00:02.0-card
-gpu-nvidia -> /dev/dri/by-path/pci-0000:02:00.0-card

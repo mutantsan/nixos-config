@@ -16,7 +16,7 @@ o.window(
 )
 
 -- Terminal tag, so bindings can single terminals out (see bindings/clipboard.lua).
-o.window("(Alacritty|kitty|com.mitchellh.ghostty|foot|org\\.codeberg\\.dnkl\\.foot|wezterm|special\\.terminal|floating\\.clipboard)", {
+o.window("(Alacritty|kitty|com.mitchellh.ghostty|foot|org\\.codeberg\\.dnkl\\.foot|wezterm|special\\.terminal)", {
   tag = "+terminal",
 })
 
@@ -61,9 +61,6 @@ o.window("localsend", { size = { 1100, 700 } })
 -- Always open VS Code and Zed on workspace 1.
 o.window("^(code.*|com\\.microsoft\\.VSCode)$", { workspace = "1" })
 o.window("^dev\\.zed\\.Zed$", { workspace = "1" })
-
--- Float the clipboard manager (spawned by hypr-clipboard).
-o.window("floating.clipboard", { float = true, center = true, size = { 900, 600 } })
 
 -- Drop-down terminal: park the "special.terminal" window on its own special
 -- workspace. Toggle with F1 (see bindings/apps.lua).

@@ -180,11 +180,6 @@
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles/vscode/.config/Code/User/keybindings.json";
 
-  # Vicinae settings live in ~/dotfiles too, so its settings UI can save.
-  xdg.configFile."vicinae/settings.json".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/vicinae/.config/vicinae/settings.json";
-
   programs.git = {
     enable = true;
 

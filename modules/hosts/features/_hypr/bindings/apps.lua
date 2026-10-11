@@ -14,24 +14,24 @@ o.bind("SUPER + CTRL + T", "Activity", apps.terminal .. " -e btop")
 o.bind("F1", "Dropdown terminal", "hypr-dropdown-terminal")
 
 -- Menus.
-o.bind("SUPER + SPACE", "Launcher", "vicinae toggle")
-o.bind("SUPER + ALT + SPACE", "Launcher", "vicinae toggle")
+o.bind("SUPER + SPACE", "Launcher", "noctalia msg panel-toggle launcher")
+o.bind("SUPER + ALT + SPACE", "Launcher", "noctalia msg panel-toggle launcher")
 o.bind("SUPER + ESCAPE", "System menu", "hypr-power-menu")
 o.bind("XF86PowerOff", "System menu", "hypr-power-menu", { locked = true })
 o.bind("SUPER + K", "Keybindings", "hypr-keybindings")
 o.bind("SUPER + CTRL + L", "Lock system", "loginctl lock-session")
 
 -- Toggles.
-o.bind("SUPER + SHIFT + SPACE", "Toggle top bar", "pkill -SIGUSR1 -x waybar")
-o.bind("SUPER + CTRL + I", "Toggle locking on idle", "hypr-idle-toggle")
+o.bind("SUPER + SHIFT + SPACE", "Toggle top bar", "noctalia msg bar-toggle")
+o.bind("SUPER + CTRL + I", "Toggle locking on idle", "noctalia msg caffeine-toggle")
 o.bind("SUPER + CTRL + N", "Toggle nightlight", "hypr-nightlight")
 
 -- Notifications. xkbcommon names the comma keysym "comma"; "COMMA" does not match.
-o.bind("SUPER + comma", "Dismiss last notification", "makoctl dismiss")
-o.bind("SUPER + SHIFT + comma", "Dismiss all notifications", "makoctl dismiss --all")
-o.bind("SUPER + CTRL + comma", "Toggle silencing notifications", "makoctl mode -t do-not-disturb")
-o.bind("SUPER + ALT + comma", "Invoke last notification", "makoctl invoke")
-o.bind("SUPER + SHIFT + ALT + comma", "Restore last notification", "makoctl restore")
+o.bind("SUPER + comma", "Dismiss notifications", "noctalia msg notification-clear-active")
+o.bind("SUPER + SHIFT + comma", "Dismiss all notifications", "noctalia msg notification-clear-active")
+o.bind("SUPER + CTRL + comma", "Toggle silencing notifications", "noctalia msg notification-dnd-toggle")
+o.bind("SUPER + ALT + comma", "Invoke notification", "noctalia msg notification-invoke-latest")
+o.bind("SUPER + SHIFT + ALT + comma", "Notification history", "noctalia msg panel-toggle control-center notifications")
 
 -- Capture.
 o.bind("PRINT", "Screenshot", "hypr-screenshot")
