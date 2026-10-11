@@ -88,6 +88,16 @@
 
   programs.zsh.enable = true;
 
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  # Starship's config lives in ~/dotfiles, shared with the other machines.
+  xdg.configFile."starship.toml".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles/starship/.config/starship.toml";
+
   programs.pyenv = {
     enable = true;
     enableZshIntegration = true;
