@@ -282,17 +282,10 @@
           '';
 
           # SUPER + SPACE launcher. Its server is started from _hypr/autostart.lua
-          # (see the note on Waybar below), so the systemd unit stays off.
+          # (see the note on Waybar below), so the systemd unit stays off. Its
+          # settings.json is linked from ~/dotfiles in the host's _home.nix.
           programs.vicinae = {
             enable = true;
-            settings = {
-              theme = {
-                dark.name = "nord";
-                light.name = "nord";
-              };
-              launcher_window.rounding = 0;
-              pop_to_root_on_close = true;
-            };
           };
 
           # Still behind the dmenu-style pickers (power menu, keybindings, clipboard).
