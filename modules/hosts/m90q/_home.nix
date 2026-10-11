@@ -29,7 +29,6 @@ in
   home.stateVersion = "25.11";
 
   home.packages = [
-    pkgs.zoxide
     pkgs.eza
     pkgs.bat
     pkgs.jq
