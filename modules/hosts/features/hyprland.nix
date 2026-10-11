@@ -195,6 +195,13 @@
               shell = {
                 font_family = font;
                 animation.enabled = false;
+
+                # Every screenshot opens the annotation editor first; Done
+                # (Enter) then saves the PNG and copies it to the clipboard.
+                screenshot = {
+                  annotate = true;
+                  directory = "~/Pictures/Screenshots";
+                };
               };
 
               # Lock after 5 minutes, screen off 30 seconds later, never

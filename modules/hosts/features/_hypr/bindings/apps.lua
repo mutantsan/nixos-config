@@ -33,9 +33,9 @@ o.bind("SUPER + ALT + comma", "Invoke notification", "noctalia msg notification-
 o.bind("SUPER + SHIFT + ALT + comma", "Notification history", "noctalia msg panel-toggle control-center notifications")
 
 -- Capture.
-o.bind("PRINT", "Screenshot", "hypr-screenshot")
-o.bind("SUPER + SHIFT + S", "Screenshot", "hypr-screenshot")
-o.bind("CTRL + PRINT", "Screenshot of the whole screen", "hypr-screenshot screen")
+o.bind("PRINT", "Screenshot", "noctalia msg screenshot-region")
+o.bind("SUPER + SHIFT + S", "Screenshot", "noctalia msg screenshot-region")
+o.bind("CTRL + PRINT", "Screenshot of the whole screen", "noctalia msg screenshot-fullscreen")
 o.bind("SUPER + PRINT", "Color picker", "pkill -x hyprpicker || hyprpicker -a")
 
 -- Zoom.
