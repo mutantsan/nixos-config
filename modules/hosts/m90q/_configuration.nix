@@ -112,7 +112,6 @@
 
   virtualisation.docker.enable = true;
 
-  programs.firefox.enable = true;
   programs.zsh.enable = true;
 
   # Loader for prebuilt generic-Linux binaries, such as the Pythons that
@@ -147,6 +146,7 @@
     which
 
     claude-code
+    chromium
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

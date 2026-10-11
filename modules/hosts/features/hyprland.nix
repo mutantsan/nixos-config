@@ -10,8 +10,8 @@
 
       apps = {
         terminal = "ghostty";
-        browser = "firefox";
-        browser_private = "firefox --private-window";
+        browser = "chromium";
+        browser_private = "chromium --incognito";
         files = "nautilus --new-window";
         editor = "code";
         dropdown_terminal = "ghostty --class=special.terminal";
