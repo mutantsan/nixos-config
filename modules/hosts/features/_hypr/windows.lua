@@ -32,7 +32,7 @@ o.window("(org.gnome.NautilusPreviewer|org.gnome.Evince|imv|mpv)", { tag = "+flo
 o.window("xdg-desktop-portal-gtk", { tag = "+floating-window" })
 o.window({
   class = "(org.gnome.Nautilus)",
-  title = "^(Open.*Files?|Open [F|f]older.*|Save.*Files?|Save.*As|Save|All Files|.*wants to [open|save].*|[C|c]hoose.*)",
+  title = "^(Open.*Files?|Open [Ff]older.*|Save.*Files?|Save.*As|Save|All Files|.*wants to (open|save).*|[Cc]hoose.*)",
 }, { tag = "+floating-window" })
 
 -- Hide screen sharing notification windows.

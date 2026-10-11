@@ -1,5 +1,5 @@
 { inputs, ... }: {
-  flake.nixosModules.hyprland = { pkgs, lib, ... }:
+  flake.nixosModules.hyprland = { config, pkgs, lib, ... }:
     let
       # Nord theme
       colors = {
@@ -7,6 +7,9 @@
       };
 
       font = "JetBrainsMono Nerd Font";
+
+      # hyprctl has to come from the same build as the running compositor.
+      hyprland = config.programs.hyprland.package;
 
       apps = {
         terminal = "ghostty";
@@ -48,7 +51,7 @@
 
         powerMenu = pkgs.writeShellApplication {
           name = "hypr-power-menu";
-          runtimeInputs = with pkgs; [ coreutils ];
+          runtimeInputs = with pkgs; [ hyprland coreutils ];
           text = ''
             choice=$(printf '%s\n' "Lock" "Suspend" "Log out" "Restart" "Shut down" |
               noctalia dmenu --prompt "System") || exit 0
@@ -65,7 +68,7 @@
 
         keybindings = pkgs.writeShellApplication {
           name = "hypr-keybindings";
-          runtimeInputs = with pkgs; [ jq ];
+          runtimeInputs = with pkgs; [ hyprland jq ];
           text = ''
             hyprctl binds -j | jq -r '
               def mods: [ (if (.modmask / 64 | floor) % 2 == 1 then "SUPER" else empty end),
@@ -81,7 +84,7 @@
 
         nightlight = pkgs.writeShellApplication {
           name = "hypr-nightlight";
-          runtimeInputs = with pkgs; [ hyprsunset libnotify procps gnugrep coreutils util-linux ];
+          runtimeInputs = with pkgs; [ hyprland hyprsunset libnotify procps gnugrep coreutils util-linux ];
           text = ''
             current() {
               hyprctl hyprsunset temperature 2>/dev/null | grep -oE '[0-9]+' | head -n1 || true
@@ -118,7 +121,7 @@
         # F1. Respawns the terminal if it was closed, so F1 always brings one back.
         dropdownTerminal = pkgs.writeShellApplication {
           name = "hypr-dropdown-terminal";
-          runtimeInputs = with pkgs; [ jq coreutils util-linux ];
+          runtimeInputs = with pkgs; [ hyprland jq coreutils util-linux ];
           text = ''
             has_window() {
               hyprctl clients -j | jq -e 'any(.[]; .class == "special.terminal")' >/dev/null
@@ -142,7 +145,7 @@
 
         closeAllWindows = pkgs.writeShellApplication {
           name = "hypr-close-all-windows";
-          runtimeInputs = with pkgs; [ jq ];
+          runtimeInputs = with pkgs; [ hyprland jq ];
           text = ''
             hyprctl clients -j | jq -r '.[].address' | while read -r addr; do
               hyprctl dispatch "hl.dsp.window.close({ window = \"address:$addr\" })" >/dev/null
