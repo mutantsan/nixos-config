@@ -3,13 +3,7 @@
     let
       # Nord theme
       colors = {
-        background = "2e3440";
-        surface = "3b4252";
-        selection = "434c5e";
-        muted = "4c566a";
-        foreground = "d8dee9";
         accent = "81a1c1";
-        red = "bf616a";
       };
 
       font = "JetBrainsMono Nerd Font";
@@ -54,10 +48,10 @@
 
         powerMenu = pkgs.writeShellApplication {
           name = "hypr-power-menu";
-          runtimeInputs = with pkgs; [ fuzzel coreutils ];
+          runtimeInputs = with pkgs; [ coreutils ];
           text = ''
             choice=$(printf '%s\n' "Lock" "Suspend" "Log out" "Restart" "Shut down" |
-              fuzzel --dmenu --lines 5 --width 20 --prompt "System  ") || exit 0
+              noctalia dmenu --prompt "System") || exit 0
 
             case "$choice" in
               "Lock") loginctl lock-session ;;
@@ -71,7 +65,7 @@
 
         keybindings = pkgs.writeShellApplication {
           name = "hypr-keybindings";
-          runtimeInputs = with pkgs; [ fuzzel jq ];
+          runtimeInputs = with pkgs; [ jq ];
           text = ''
             hyprctl binds -j | jq -r '
               def mods: [ (if (.modmask / 64 | floor) % 2 == 1 then "SUPER" else empty end),
@@ -81,7 +75,7 @@
               .[]
               | select(.has_description and .description != "" and .key != "")
               | "\((mods + [.key | ascii_upcase]) | join(" + "))  →  \(.description)"
-            ' | fuzzel --dmenu --lines 20 --width 70 --prompt "Keybindings  " >/dev/null || true
+            ' | noctalia dmenu --prompt "Keybindings" >/dev/null || true
           '';
         };
 
@@ -251,37 +245,6 @@
               polkit_agent = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent",
             }
           '';
-
-          # Still behind the dmenu-style pickers (power menu, keybindings).
-          programs.fuzzel = {
-            enable = true;
-            settings = {
-              main = {
-                font = "${font}:size=13";
-                terminal = "${apps.terminal} -e";
-                lines = 10;
-                width = 40;
-                horizontal-pad = 20;
-                vertical-pad = 14;
-                inner-pad = 8;
-              };
-              colors = {
-                background = "${colors.background}ff";
-                text = "${colors.foreground}ff";
-                prompt = "${colors.accent}ff";
-                input = "${colors.foreground}ff";
-                match = "${colors.accent}ff";
-                selection = "${colors.selection}ff";
-                selection-text = "${colors.foreground}ff";
-                selection-match = "${colors.accent}ff";
-                border = "${colors.accent}ff";
-              };
-              border = {
-                width = 2;
-                radius = 0;
-              };
-            };
-          };
         }
       ];
     };

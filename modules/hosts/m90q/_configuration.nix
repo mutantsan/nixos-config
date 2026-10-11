@@ -101,6 +101,10 @@
   programs.firefox.enable = true;
   programs.zsh.enable = true;
 
+  # Loader for prebuilt generic-Linux binaries, such as the Pythons that
+  # `uv python install` downloads.
+  programs.nix-ld.enable = true;
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 

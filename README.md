@@ -52,12 +52,12 @@ Check these on different hardware:
 
 - SSH key for GitHub
 - Language toolchains: Nix installs only the version managers, which start
-  empty. Run once to download the actual toolchains:
+  empty. Run once to download the actual toolchains (uv fetches Pythons on
+  demand, so it needs no step here):
 
   ```sh
   rustup default stable     # Rust
   fnm install --lts         # Node
-  pyenv install <version>   # Python
   ```
 
 ## Rebuild

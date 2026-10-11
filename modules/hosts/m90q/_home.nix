@@ -118,11 +118,6 @@ in
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles/starship/.config/starship.toml";
 
-  programs.pyenv = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
