@@ -1,9 +1,10 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./_hardware-configuration.nix
+      inputs.noctalia-greeter.nixosModules.default
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -50,9 +51,22 @@
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
+  # Login screen: Noctalia Greeter on greetd.
+  services.displayManager.noctalia-greeter = {
+    enable = true;
+    settings = {
+      session.default = "hyprland";
+      user.default = "kiwi";
+      appearance = {
+        scheme = "Nord";
+        theme_mode = "dark";
+      };
+      keyboard.layout = "gb";
+    };
+  };
   services.displayManager.defaultSession = "hyprland";
+
+  # Enable the KDE Plasma Desktop Environment.
   services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
