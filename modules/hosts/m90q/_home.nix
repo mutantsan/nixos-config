@@ -1,5 +1,24 @@
 { config, pkgs, ... }:
 
+let
+  # Jira time tracking CLI, from crates.io (not in nixpkgs). To update: bump
+  # version, blank both hashes, rebuild and paste the hashes Nix reports.
+  tempie = pkgs.rustPlatform.buildRustPackage rec {
+    pname = "tempie";
+    version = "0.11.1";
+
+    src = pkgs.fetchCrate {
+      inherit pname version;
+      hash = "sha256-QWScv/t8OCCWAozDPcwERb1RRadnI2CdXR6aIxgNv1U=";
+    };
+
+    cargoHash = "sha256-nSTs6dNT91T2C9tsIXXgiLvpHMGJ5gsnRZrFUVN/O98=";
+
+    nativeBuildInputs = [ pkgs.pkg-config ];
+    buildInputs = [ pkgs.openssl ];
+  };
+in
+
 {
   home.username = "kiwi";
   home.homeDirectory = "/home/kiwi";
@@ -23,6 +42,7 @@
     pkgs.telegram-desktop
     pkgs.tmux
     pkgs.gettext # envsubst, for initckan
+    tempie
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -167,6 +187,8 @@
         ms-python.vscode-python-envs
         waderyan.gitblame
         charliermarsh.ruff
+        tamasfe.even-better-toml
+        arcticicestudio.nord-visual-studio-code
       ];
     };
   };
