@@ -112,11 +112,46 @@
 
   virtualisation.docker.enable = true;
 
+  # Dev services. Units run with --rm, so anything worth keeping needs a
+  # volume. Ports bind to localhost because Docker bypasses the firewall.
+  virtualisation.oci-containers = {
+    backend = "docker";
+    containers = {
+      pg18 = {
+        image = "pgvector/pgvector:pg18";
+        ports = [ "127.0.0.1:5432:5432" ];
+        environment = {
+          POSTGRES_USER = "root";
+          POSTGRES_PASSWORD = "root";
+        };
+        volumes = [ "pg18-data:/var/lib/postgresql" ];
+      };
+      smtp4dev = {
+        image = "rnwood/smtp4dev";
+        ports = [ "127.0.0.1:1025:25" "127.0.0.1:5001:80" ];
+      };
+      redis8 = {
+        image = "redis:8";
+        ports = [ "127.0.0.1:6379:6379" ];
+        volumes = [ "redis8-data:/data" ];
+      };
+      solr9 = {
+        image = "solr:9";
+        ports = [ "127.0.0.1:8983:8983" ];
+        volumes = [ "solr9-data:/var/solr" ];
+      };
+    };
+  };
+
   programs.zsh.enable = true;
 
   # Loader for prebuilt generic-Linux binaries, such as the Pythons that
   # `uv python install` downloads.
   programs.nix-ld.enable = true;
+  # Extra libraries those binaries dlopen at runtime.
+  programs.nix-ld.libraries = with pkgs; [
+    file # libmagic, for python-magic
+  ];
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;

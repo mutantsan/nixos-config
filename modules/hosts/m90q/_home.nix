@@ -42,6 +42,8 @@ in
     pkgs.telegram-desktop
     pkgs.tmux
     pkgs.gettext # envsubst, for initckan
+    pkgs.gcc # C compiler for Python sdists such as psycopg2
+    pkgs.libpq.pg_config # psycopg2 build needs pg_config
     tempie
   ];
 
