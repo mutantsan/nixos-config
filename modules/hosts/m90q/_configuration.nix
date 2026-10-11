@@ -10,37 +10,6 @@
 
   hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
 
-  # Without this, NixOS never loads the nvidia kernel module and nouveau
-  # binds the dGPU instead, which breaks PRIME offload and is what niri
-  # was accidentally rendering through.
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  # Intel + NVIDIA (ThinkCentre M90q). Bus IDs read from sysfs:
-  # Intel 0000:00:02.0 -> PCI:0:2:0, NVIDIA 0000:02:00.0 -> PCI:2:0:0.
-  hardware.nvidia.prime = {
-    offload.enable = true;
-    offload.enableOffloadCmd = true; # gives you `nvidia-offload <cmd>`
-    intelBusId = "PCI:0:2:0";
-    nvidiaBusId = "PCI:2:0:0";
-  };
-  # This GPU (0x1cb6, Maxwell-Volta era) predates the open kernel modules,
-  # so it needs the legacy driver series, which pins the kernel it builds against.
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
-  # legacy_580 is >=560, where NixOS requires this to be set explicitly;
-  # Maxwell/Volta don't support the open kernel modules (Turing+ only).
-  hardware.nvidia.open = false;
-
-  # Hyprland (aquamarine) takes its GPU order from AQ_DRM_DEVICES, and a
-  # /dev/dri/by-path name cannot go in that colon-separated list, so give both
-  # cards stable colon-free names. Intel first: it drives the display, and
-  # compositing through the NVIDIA card lags (same reason as niri's
-  # render-drm-device).
-  services.udev.extraRules = ''
-    KERNEL=="card*", KERNELS=="0000:00:02.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/igpu"
-    KERNEL=="card*", KERNELS=="0000:02:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/dgpu"
-  '';
-  environment.sessionVariables.AQ_DRM_DEVICES = "/dev/dri/igpu:/dev/dri/dgpu";
-
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.users.kiwi = import ./_home.nix;

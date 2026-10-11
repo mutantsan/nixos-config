@@ -7,7 +7,6 @@
       ./_configuration.nix
       inputs.home-manager.nixosModules.home-manager
       { home-manager.extraSpecialArgs = { inherit inputs; }; }
-      self.nixosModules.niri
       self.nixosModules.hyprland
     ];
   };

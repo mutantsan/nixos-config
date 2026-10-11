@@ -8,36 +8,24 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/0b100f16-83eb-45a9-86f6-169d67826cef";
-      fsType = "btrfs";
-    };
-
-  fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/0b100f16-83eb-45a9-86f6-169d67826cef";
-      fsType = "btrfs";
-      options = [ "subvol=home" ];
-    };
-
-  fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/0b100f16-83eb-45a9-86f6-169d67826cef";
-      fsType = "btrfs";
-      options = [ "subvol=nix" ];
+    { device = "/dev/disk/by-uuid/e109d5aa-533c-453a-9c51-fac493d2f5f6";
+      fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/EBBB-DFC3";
+    { device = "/dev/disk/by-uuid/7171-42A6";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/d65c845e-1366-4f92-baab-3e89f86abb97"; }
+    [ { device = "/dev/disk/by-uuid/4fc2a7ee-6c6a-40be-9c62-dda045284dfc"; }
     ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
