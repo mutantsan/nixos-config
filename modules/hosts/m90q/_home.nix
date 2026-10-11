@@ -29,11 +29,9 @@ in
   home.stateVersion = "25.11";
 
   home.packages = [
-    pkgs.fzf
     pkgs.zoxide
     pkgs.eza
     pkgs.bat
-    pkgs.delta
     pkgs.jq
     pkgs.rustup
     pkgs.uv
@@ -104,9 +102,6 @@ in
     EDITOR = "nvim";
     TERMINAL = "ghostty";
   };
-
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
 
   programs.zsh.enable = true;
 
