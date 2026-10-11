@@ -27,8 +27,7 @@ o.bind("SUPER + CTRL + I", "Toggle locking on idle", "noctalia msg caffeine-togg
 o.bind("SUPER + CTRL + N", "Toggle nightlight", "hypr-nightlight")
 
 -- Notifications. xkbcommon names the comma keysym "comma"; "COMMA" does not match.
-o.bind("SUPER + comma", "Dismiss notifications", "noctalia msg notification-clear-active")
-o.bind("SUPER + SHIFT + comma", "Dismiss all notifications", "noctalia msg notification-clear-active")
+o.bind("SUPER + comma", "Dismiss all notifications", "noctalia msg notification-clear-active")
 o.bind("SUPER + CTRL + comma", "Toggle silencing notifications", "noctalia msg notification-dnd-toggle")
 o.bind("SUPER + ALT + comma", "Invoke notification", "noctalia msg notification-invoke-latest")
 o.bind("SUPER + SHIFT + ALT + comma", "Notification history", "noctalia msg panel-toggle control-center notifications")
