@@ -8,6 +8,13 @@
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.auto-optimise-store = true;
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 14d";
+  };
 
   hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
 
@@ -17,6 +24,7 @@
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.
@@ -47,10 +55,6 @@
     LC_TIME = "uk_UA.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  # You can disable this if you're only using the Wayland session.
-  services.xserver.enable = true;
-
   # Login screen: Noctalia Greeter on greetd.
   services.displayManager.noctalia-greeter = {
     enable = true;
@@ -66,8 +70,12 @@
   };
   services.displayManager.defaultSession = "hyprland";
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.desktopManager.plasma6.enable = true;
+  # Firmware updates (fwupdmgr).
+  services.fwupd.enable = true;
+
+  # Secret service for the Hyprland session, unlocked at login.
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.greetd.enableGnomeKeyring = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
