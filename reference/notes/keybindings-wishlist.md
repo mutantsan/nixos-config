@@ -1,0 +1,6 @@
+- Pressing F1 toggles the terminal.
+- Super + 1, 2, 3, 4, 5 - switch between workspaces
+- Shift-super-enter - opens a browser
+- super-w - close window
+- super-v - should we make it a paste?
+- i still can add a new terminal window on a different or same workspace. On aerospace opening a terminal will send it to the T workspace window

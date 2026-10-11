@@ -1,0 +1,4 @@
+theme: flexoki-light
+background: 1-orb.png
+default editor: code
+default agent: claude

@@ -1,0 +1,9 @@
+akshar.radio-atlas  https://github.com/AksharP5/omarchy-radio-atlas.git  655bf29
+evindor.keystroke  https://github.com/evindor/keystroke.git  c9cf1a0
+io.github.tyrichards.tray  https://github.com/TyRichards/omarchy-tray.git  c1590d8
+mutantsan.solr-status  git@github.com:mutantsan/solr-status.git  c1791ba
+njpatel.omapager  https://github.com/njpatel/omapager.git  06f5117
+setup.defaults  https://github.com/nightdevil00/setup.defaults.git  aaed555
+stappmus.activity-monitor  https://github.com/stappmus/omarchy-activity-monitor.git  b25a98c
+yenst.nightswatch  https://github.com/yenst/NightsWatch.git  e5c60d7
+zeru.portwatch  https://github.com/ZerubbabelT/portwatch.git  fcca353

@@ -30,6 +30,17 @@
   # Maxwell/Volta don't support the open kernel modules (Turing+ only).
   hardware.nvidia.open = false;
 
+  # Hyprland (aquamarine) takes its GPU order from AQ_DRM_DEVICES, and a
+  # /dev/dri/by-path name cannot go in that colon-separated list, so give both
+  # cards stable colon-free names. Intel first: it drives the display, and
+  # compositing through the NVIDIA card lags (same reason as niri's
+  # render-drm-device).
+  services.udev.extraRules = ''
+    KERNEL=="card*", KERNELS=="0000:00:02.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/igpu"
+    KERNEL=="card*", KERNELS=="0000:02:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/dgpu"
+  '';
+  environment.sessionVariables.AQ_DRM_DEVICES = "/dev/dri/igpu:/dev/dri/dgpu";
+
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.users.kiwi = import ./_home.nix;

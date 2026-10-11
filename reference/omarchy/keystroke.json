@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "palette": {},
+  "providers": {
+    "currency": {
+      "enabled": true
+    }
+  }
+}
