@@ -154,6 +154,10 @@
     {
       programs.hyprland.enable = true;
 
+      # The power key opens hypr-power-menu (_hypr/bindings/apps.lua); stop
+      # logind from powering off on the same press.
+      services.logind.settings.Login.HandlePowerKey = "ignore";
+
       # Automounting removable drives (udiskie).
       services.udisks2.enable = true;
 
