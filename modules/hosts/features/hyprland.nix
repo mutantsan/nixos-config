@@ -169,7 +169,6 @@
         slurp
         wl-clipboard
         libnotify
-        brightnessctl
         playerctl
         wireplumber
         udiskie

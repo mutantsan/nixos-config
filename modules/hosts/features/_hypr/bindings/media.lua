@@ -1,4 +1,4 @@
--- Volume, brightness and media keys. keyd maps the Fn row to F1-F12 on this
+-- Volume and media keys. keyd maps the Fn row to F1-F12 on this
 -- machine, so these fire from keyboards that send the XF86 keysyms directly.
 local sink = "@DEFAULT_AUDIO_SINK@"
 local source = "@DEFAULT_AUDIO_SOURCE@"
@@ -7,14 +7,10 @@ o.bind("XF86AudioRaiseVolume", "Volume up", "wpctl set-volume -l 1 " .. sink .. 
 o.bind("XF86AudioLowerVolume", "Volume down", "wpctl set-volume " .. sink .. " 5%-", { locked = true, repeating = true })
 o.bind("XF86AudioMute", "Mute", "wpctl set-mute " .. sink .. " toggle", { locked = true })
 o.bind("XF86AudioMicMute", "Mute microphone", "wpctl set-mute " .. source .. " toggle", { locked = true })
-o.bind("XF86MonBrightnessUp", "Brightness up", "brightnessctl set +5%", { locked = true, repeating = true })
-o.bind("XF86MonBrightnessDown", "Brightness down", "brightnessctl set 5%-", { locked = true, repeating = true })
 
--- Precise volume and brightness controls.
+-- Precise volume controls.
 o.bind("ALT + XF86AudioRaiseVolume", "Volume up precise", "wpctl set-volume -l 1 " .. sink .. " 1%+", { locked = true, repeating = true })
 o.bind("ALT + XF86AudioLowerVolume", "Volume down precise", "wpctl set-volume " .. sink .. " 1%-", { locked = true, repeating = true })
-o.bind("ALT + XF86MonBrightnessUp", "Brightness up precise", "brightnessctl set +1%", { locked = true, repeating = true })
-o.bind("ALT + XF86MonBrightnessDown", "Brightness down precise", "brightnessctl set 1%-", { locked = true, repeating = true })
 
 -- Media controls.
 o.bind("XF86AudioNext", "Next track", "playerctl next", { locked = true })
