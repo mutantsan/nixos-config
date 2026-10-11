@@ -178,6 +178,10 @@ in
   };
 
   programs.zsh.initContent = ''
+    # Tab completion: try a prefix match first, then fall back to matching
+    # anywhere in the name (`cd tab<TAB>` -> ckanext-tables).
+    zstyle ':completion:*' matcher-list ''' 'l:|=* r:|=*'
+
     # No home-manager module for fnm exists yet; hook it manually.
     eval "$(fnm env --use-on-cd --shell zsh)"
 
