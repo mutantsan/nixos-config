@@ -207,6 +207,9 @@
                 };
               };
 
+              # Weather location.
+              location.address = "Cherkasy, Ukraine";
+
               # Lock after 5 minutes, screen off 30 seconds later, never
               # suspend. Locking before sleep is Noctalia's default.
               idle.behavior = {
