@@ -32,6 +32,8 @@ in
     pkgs.slack
     pkgs.dbgate # community edition (MIT)
     pkgs.libreoffice
+    pkgs.proton-pass
+    pkgs.proton-pass-cli
     pkgs.obs-studio
     pkgs.tmux
     pkgs.gettext # envsubst, for initckan
