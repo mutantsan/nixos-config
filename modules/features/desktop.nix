@@ -6,7 +6,8 @@
     services.displayManager.noctalia-greeter = {
       enable = true;
       settings = {
-        session.default = "hyprland";
+        # Matched against the desktop entry's Name=, not its file name.
+        session.default = "Hyprland (uwsm-managed)";
         user.default = config.my.user;
         appearance = {
           scheme = "Nord";
@@ -22,7 +23,7 @@
         };
       };
     };
-    services.displayManager.defaultSession = "hyprland";
+    services.displayManager.defaultSession = "hyprland-uwsm";
 
     # Secret service for the Hyprland session, unlocked at login.
     services.gnome.gnome-keyring.enable = true;

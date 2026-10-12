@@ -65,7 +65,8 @@ in
     };
   };
 
-  # Mouse cursor. Hyprland gets the theme name from _hypr/envs.lua.
+  # Mouse cursor. Hyprland gets the theme name from ~/.config/uwsm/env
+  # (hyprland.nix).
   home.pointerCursor = {
     package = pkgs.kdePackages.breeze;
     name = "breeze_cursors";

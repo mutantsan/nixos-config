@@ -1,15 +1,12 @@
 local settings = require("settings")
 
 hl.on("hyprland.start", function()
-  -- Hand the session environment to systemd and D-Bus first, so portals and
-  -- D-Bus activated services can reach the compositor.
-  hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+  -- Tell UWSM the compositor is up: exports the session variables to systemd
+  -- and D-Bus and activates graphical-session.target, which starts Noctalia,
+  -- the polkit agent and udiskie (user services, see ../hyprland.nix).
+  hl.exec_cmd("uwsm finalize HYPRLAND_INSTANCE_SIGNATURE")
 
-  -- Shell layer.
-  hl.exec_cmd("noctalia")
   hl.exec_cmd("hyprsunset")
-  hl.exec_cmd(settings.polkit_agent)
-  hl.exec_cmd("udiskie --automount --no-notify --no-tray")
 
   -- Drop-down terminal; the window rules park it on special:terminal.
   hl.exec_cmd(settings.apps.dropdown_terminal)

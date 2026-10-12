@@ -26,7 +26,7 @@
 
         powerMenu = pkgs.writeShellApplication {
           name = "hypr-power-menu";
-          runtimeInputs = with pkgs; [ hyprland coreutils ];
+          runtimeInputs = with pkgs; [ coreutils ];
           text = ''
             choice=$(printf '%s\n' "Lock" "Suspend" "Log out" "Restart" "Shut down" |
               noctalia dmenu --prompt "System") || exit 0
@@ -34,7 +34,9 @@
             case "$choice" in
               "Lock") loginctl lock-session ;;
               "Suspend") systemctl suspend ;;
-              "Log out") hyprctl dispatch 'hl.dsp.exit()' ;;
+              # Stops the compositor and the session units together; a bare
+              # hl.dsp.exit() would leave graphical-session.target behind.
+              "Log out") uwsm stop ;;
               "Restart") systemctl reboot ;;
               "Shut down") systemctl poweroff ;;
             esac
@@ -137,7 +139,12 @@
       };
 
       config = {
-        programs.hyprland.enable = true;
+        # UWSM wraps the compositor in systemd units and activates
+        # graphical-session.target, which the user services below hang off.
+        programs.hyprland = {
+          enable = true;
+          withUWSM = true;
+        };
 
         # The power key opens hypr-power-menu (_hypr/bindings/apps.lua); stop
         # logind from powering off on the same press.
@@ -152,7 +159,6 @@
         environment.systemPackages = (builtins.attrValues scripts) ++ (with pkgs; [
           hyprsunset
           hyprpicker
-          hyprpolkitagent
           wl-clipboard
           libnotify
           playerctl
@@ -166,11 +172,10 @@
           inputs.noctalia.homeModules.default
           {
             # Bar, notifications, launcher, clipboard, wallpaper, lock screen and
-            # idle handling. Started from _hypr/autostart.lua
-            # rather than systemd: without UWSM nothing activates
-            # graphical-session.target.
+            # idle handling.
             programs.noctalia = {
               enable = true;
+              systemd.enable = true;
               settings = {
                 theme = {
                   mode = "dark";
@@ -217,6 +222,39 @@
               };
             };
 
+            services.hyprpolkitagent.enable = true;
+
+            # Automounts removable drives; needs services.udisks2 above.
+            services.udiskie = {
+              enable = true;
+              automount = true;
+              notify = false;
+              tray = "never";
+            };
+
+            # Session environment. UWSM loads these before the compositor and
+            # hands them to systemd, so user services (and whatever Noctalia
+            # launches) see them too; hl.env() only reaches Hyprland's own
+            # children.
+            xdg.configFile."uwsm/env".text = ''
+              # Cursor theme (installed by home.pointerCursor) and size.
+              export XCURSOR_THEME=breeze_cursors
+              export XCURSOR_SIZE=24
+
+              # Force all apps to use Wayland.
+              export GDK_BACKEND="wayland,x11,*"
+              export QT_QPA_PLATFORM="wayland;xcb"
+              export MOZ_ENABLE_WAYLAND=1
+              export ELECTRON_OZONE_PLATFORM_HINT=wayland
+              export OZONE_PLATFORM=wayland
+              export NIXOS_OZONE_WL=1
+            '';
+
+            xdg.configFile."uwsm/env-hyprland".text = ''
+              export HYPRCURSOR_THEME=breeze_cursors
+              export HYPRCURSOR_SIZE=24
+            '';
+
             # Each file is linked separately, so settings.lua can sit next to
             # them.
             xdg.configFile."hypr" = {
@@ -242,8 +280,6 @@
                 },
 
                 monitor_scale = ${toString config.my.hyprland.monitorScale},
-
-                polkit_agent = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent",
               }
             '';
           }
