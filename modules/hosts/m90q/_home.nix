@@ -85,6 +85,8 @@ in
   };
 
   programs.zsh.enable = true;
+  # EDITOR=nvim would otherwise make zsh pick the vi keymap.
+  programs.zsh.defaultKeymap = "emacs";
 
   programs.starship = {
     enable = true;
@@ -188,6 +190,10 @@ in
   };
 
   programs.zsh.initContent = ''
+    # Word motions/deletes (Alt-Backspace, Alt-B/F/D) stop at punctuation, as
+    # in bash, instead of treating a whole path as one word.
+    WORDCHARS=""
+
     # Tab completion: try a prefix match first, then fall back to matching
     # anywhere in the name (`cd tab<TAB>` -> ckanext-tables).
     zstyle ':completion:*' matcher-list ''' 'l:|=* r:|=*'
