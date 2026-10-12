@@ -38,6 +38,7 @@ in
     pkgs.fnm
     pkgs.telegram-desktop
     pkgs.slack
+    pkgs.dbgate # community edition (MIT)
     pkgs.tmux
     pkgs.gettext # envsubst, for initckan
     pkgs.gcc # C compiler for Python sdists such as psycopg2
@@ -160,7 +161,6 @@ in
         ms-python.python
         ms-python.debugpy
         ms-python.vscode-python-envs
-        waderyan.gitblame
         charliermarsh.ruff
         tamasfe.even-better-toml
         arcticicestudio.nord-visual-studio-code
@@ -182,6 +182,7 @@ in
 
     settings.user.name = "Oleksandr Cherniavskyi";
     settings.user.email = "kvaqich@gmail.com";
+    settings.credential.helper = "cache --timeout=86400";
   };
 
   programs.delta = {
