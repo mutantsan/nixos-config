@@ -45,7 +45,6 @@ in
     pkgs.gcc # C compiler for Python sdists such as psycopg2
     pkgs.libpq.pg_config # psycopg2 build needs pg_config
     pkgs.docker-sbx # sbx, Docker's sandbox CLI for agents
-    pkgs.adw-gtk3 # GTK3 theme dconf points at (adw-gtk3-dark); themes Electron menu bars
     tempie
   ];
 
@@ -79,6 +78,43 @@ in
     name = "breeze_cursors";
     size = 24;
     hyprcursor.enable = true;
+    gtk.enable = true;
+  };
+
+  # GTK theme, icons and fonts. Written to gtk-3.0/gtk-4.0 settings.ini and to
+  # dconf, which is what the portal and Electron apps read.
+  gtk = {
+    enable = true;
+    colorScheme = "dark";
+
+    # GTK3 port of libadwaita; also themes Electron menu bars.
+    theme = {
+      package = pkgs.adw-gtk3;
+      name = "adw-gtk3-dark";
+    };
+
+    iconTheme = {
+      package = pkgs.papirus-icon-theme;
+      name = "Papirus-Dark";
+    };
+
+    # The font itself comes from fonts.packages in _configuration.nix.
+    font = {
+      name = "Noto Sans";
+      size = 10;
+    };
+
+    # No GTK2 apps here; skip ~/.gtkrc-2.0.
+    gtk2.enable = false;
+
+    # libadwaita is dark through colorScheme alone. With this stateVersion the
+    # option would otherwise inherit gtk.theme and import adw-gtk3 as user CSS.
+    gtk4.theme = null;
+  };
+
+  dconf.settings."org/gnome/desktop/interface" = {
+    document-font-name = "Noto Sans 10";
+    monospace-font-name = "JetBrainsMono Nerd Font 10";
   };
 
   home.sessionVariables = {

@@ -152,6 +152,7 @@
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
+    noto-fonts # Noto Sans, the GTK interface font (gtk.font in _home.nix)
   ];
 
   environment.systemPackages = with pkgs; [
