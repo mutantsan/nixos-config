@@ -51,6 +51,17 @@
       noto-fonts # Noto Sans, the GTK interface font (gtk.font in _home.nix)
     ];
 
+    # Qt theming, to match the GTK setup in _home.nix. Set here rather than in
+    # Home Manager: its session variables only reach shells, not apps started
+    # from Hyprland.
+    qt = {
+      enable = true;
+      style = "adwaita-dark";
+    };
+    # Qt's built-in GTK3 platform theme (not in the qt.platformTheme enum):
+    # takes icons, fonts and file dialogs from the GTK settings.
+    environment.variables.QT_QPA_PLATFORMTHEME = "gtk3";
+
     environment.systemPackages = with pkgs; [
       chromium
     ];
