@@ -43,6 +43,7 @@ in
     pkgs.gcc # C compiler for Python sdists such as psycopg2
     pkgs.libpq.pg_config # psycopg2 build needs pg_config
     pkgs.docker-sbx # sbx, Docker's sandbox CLI for agents
+    pkgs.adw-gtk3 # GTK3 theme dconf points at (adw-gtk3-dark); themes Electron menu bars
     tempie
   ];
 

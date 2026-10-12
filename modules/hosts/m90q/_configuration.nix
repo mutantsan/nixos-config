@@ -167,6 +167,7 @@
     tree
     file
     which
+    gnumake
 
     claude-code
     chromium
