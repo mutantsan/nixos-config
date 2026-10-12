@@ -23,31 +23,6 @@
       # Under the Lua config, hyprctl only accepts Lua dispatchers
       # (hl.dsp.*), not the classic "dispatch <name> <args>" form.
       scripts = {
-        screenshot = pkgs.writeShellApplication {
-          name = "hypr-screenshot";
-          runtimeInputs = with pkgs; [ grim slurp wl-clipboard libnotify procps coreutils ];
-          text = ''
-            dir="$HOME/Pictures/Screenshots"
-            mkdir -p "$dir"
-
-            # A second press while selecting cancels.
-            if pkill -x slurp; then
-              exit 0
-            fi
-
-            file="$dir/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
-
-            if [ "''${1:-region}" = "screen" ]; then
-              grim "$file"
-            else
-              region=$(slurp) || exit 0
-              grim -g "$region" "$file"
-            fi
-
-            wl-copy --type image/png <"$file"
-            notify-send -t 3000 -i "$file" "Screenshot saved" "$file"
-          '';
-        };
 
         powerMenu = pkgs.writeShellApplication {
           name = "hypr-power-menu";
@@ -171,8 +146,6 @@
         hyprsunset
         hyprpicker
         hyprpolkitagent
-        grim
-        slurp
         wl-clipboard
         libnotify
         playerctl

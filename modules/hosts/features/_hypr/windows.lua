@@ -51,16 +51,8 @@ o.window({ title = "(Picture.?in.?[Pp]icture)" }, {
 -- Prevent Telegram from stealing focus on new messages.
 o.window("org.telegram.desktop", { focus_on_activate = false })
 
-o.window("steam", { float = true, idle_inhibit = "fullscreen" })
-o.window({ class = "steam", title = "Steam" }, { center = true, size = { 1100, 700 } })
-o.window({ class = "steam", title = "Friends List" }, { size = { 460, 800 } })
-
-o.window("(Share|localsend)", { float = true, center = true })
-o.window("localsend", { size = { 1100, 700 } })
-
 -- Always open VS Code and Zed on workspace 1.
 o.window("^(code.*|com\\.microsoft\\.VSCode)$", { workspace = "1" })
-o.window("^dev\\.zed\\.Zed$", { workspace = "1" })
 
 -- Drop-down terminal: park the "special.terminal" window on its own special
 -- workspace. Toggle with F1 (see bindings/apps.lua).
