@@ -157,6 +157,17 @@ in
           "${jtsCore}:/opt/solr/server/solr-webapp/webapp/WEB-INF/lib/${jtsCore.name}:ro"
         ];
       };
+      silo = {
+        image = "pgsty/silo";
+        # 9000 is the S3 API, 9001 the web console.
+        ports = [ "127.0.0.1:9000:9000" "127.0.0.1:9001:9001" ];
+        environment = {
+          MINIO_ROOT_USER = "admin";
+          MINIO_ROOT_PASSWORD = "admin123";
+        };
+        volumes = [ "silo-data:/data" ];
+        cmd = [ "server" "/data" "--console-address" ":9001" ];
+      };
     };
   };
 
