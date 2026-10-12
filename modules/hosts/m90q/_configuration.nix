@@ -31,7 +31,7 @@ in
   boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos";
+  networking.hostName = "m90q";
   networking.networkmanager.enable = true;
 
   time.timeZone = "Europe/Kyiv";

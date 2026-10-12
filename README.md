@@ -36,7 +36,7 @@ at `~/dotfiles`; Home Manager symlinks configs straight into it.
    ```sh
    sudo nixos-rebuild switch \
      --extra-experimental-features 'nix-command flakes' \
-     --flake path:/home/kiwi/nixos-config#nixos
+     --flake path:/home/kiwi/nixos-config#m90q
    ```
 
 6. Reboot.
@@ -63,5 +63,5 @@ Check these on different hardware:
 ## Rebuild
 
 ```sh
-sudo nixos-rebuild switch --flake path:/home/kiwi/nixos-config#nixos
+sudo nixos-rebuild switch --flake path:/home/kiwi/nixos-config#m90q
 ```
