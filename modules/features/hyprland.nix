@@ -130,114 +130,124 @@
       };
     in
     {
-      programs.hyprland.enable = true;
+      options.my.hyprland.monitorScale = lib.mkOption {
+        type = lib.types.number;
+        default = 1;
+        description = "Hyprland scale factor applied to every monitor.";
+      };
 
-      # The power key opens hypr-power-menu (_hypr/bindings/apps.lua); stop
-      # logind from powering off on the same press.
-      services.logind.settings.Login.HandlePowerKey = "ignore";
+      config = {
+        programs.hyprland.enable = true;
 
-      # Automounting removable drives (udiskie).
-      services.udisks2.enable = true;
+        # The power key opens hypr-power-menu (_hypr/bindings/apps.lua); stop
+        # logind from powering off on the same press.
+        services.logind.settings.Login.HandlePowerKey = "ignore";
 
-      # Nautilus needs GVfs for trash://, network locations and MTP devices.
-      services.gvfs.enable = true;
+        # Automounting removable drives (udiskie).
+        services.udisks2.enable = true;
 
-      environment.systemPackages = (builtins.attrValues scripts) ++ (with pkgs; [
-        hyprsunset
-        hyprpicker
-        hyprpolkitagent
-        wl-clipboard
-        libnotify
-        playerctl
-        wireplumber
-        udiskie
-        nautilus
-        pavucontrol
-      ]);
+        # Nautilus needs GVfs for trash://, network locations and MTP devices.
+        services.gvfs.enable = true;
 
-      home-manager.sharedModules = [
-        inputs.noctalia.homeModules.default
-        {
-          # Bar, notifications, launcher, clipboard, wallpaper, lock screen and
-          # idle handling. Started from _hypr/autostart.lua
-          # rather than systemd: without UWSM nothing activates
-          # graphical-session.target.
-          programs.noctalia = {
-            enable = true;
-            settings = {
-              theme = {
-                mode = "dark";
-                source = "builtin";
-                builtin = "Nord";
-              };
+        environment.systemPackages = (builtins.attrValues scripts) ++ (with pkgs; [
+          hyprsunset
+          hyprpicker
+          hyprpolkitagent
+          wl-clipboard
+          libnotify
+          playerctl
+          wireplumber
+          udiskie
+          nautilus
+          pavucontrol
+        ]);
 
-              shell = {
-                font_family = font;
-                animation.enabled = false;
-
-                # Every screenshot opens the annotation editor first; Done
-                # (Enter) then saves the PNG and copies it to the clipboard.
-                screenshot = {
-                  annotate = true;
-                  directory = "~/Pictures/Screenshots";
+        home-manager.sharedModules = [
+          inputs.noctalia.homeModules.default
+          {
+            # Bar, notifications, launcher, clipboard, wallpaper, lock screen and
+            # idle handling. Started from _hypr/autostart.lua
+            # rather than systemd: without UWSM nothing activates
+            # graphical-session.target.
+            programs.noctalia = {
+              enable = true;
+              settings = {
+                theme = {
+                  mode = "dark";
+                  source = "builtin";
+                  builtin = "Nord";
                 };
-              };
 
-              # Weather location.
-              location.address = "Cherkasy, Ukraine";
+                shell = {
+                  font_family = font;
+                  animation.enabled = false;
 
-              # Lock after 5 minutes, screen off 30 seconds later, never
-              # suspend. Locking before sleep is Noctalia's default.
-              idle.behavior = {
-                lock = {
-                  enabled = true;
-                  timeout = 300;
-                  action = "lock";
+                  # Every screenshot opens the annotation editor first; Done
+                  # (Enter) then saves the PNG and copies it to the clipboard.
+                  screenshot = {
+                    annotate = true;
+                    directory = "~/Pictures/Screenshots";
+                  };
                 };
-                screen-off = {
-                  enabled = true;
-                  timeout = 330;
-                  action = "screen_off";
-                };
-              };
 
-              bar.main = {
-                position = "top";
-                start = [ "workspaces" "sysmon" ];
-                center = [ "clock" ];
-                end = [ "tray" "notifications" "volume" "brightness" "wallpaper" "control-center" ];
+                # Weather location.
+                location.address = "Cherkasy, Ukraine";
+
+                # Lock after 5 minutes, screen off 30 seconds later, never
+                # suspend. Locking before sleep is Noctalia's default.
+                idle.behavior = {
+                  lock = {
+                    enabled = true;
+                    timeout = 300;
+                    action = "lock";
+                  };
+                  screen-off = {
+                    enabled = true;
+                    timeout = 330;
+                    action = "screen_off";
+                  };
+                };
+
+                bar.main = {
+                  position = "top";
+                  start = [ "workspaces" "sysmon" ];
+                  center = [ "clock" ];
+                  end = [ "tray" "notifications" "volume" "brightness" "wallpaper" "control-center" ];
+                };
               };
             };
-          };
 
-          # Each file is linked separately, so settings.lua can sit next to
-          # them.
-          xdg.configFile."hypr" = {
-            source = ./_hypr;
-            recursive = true;
-          };
+            # Each file is linked separately, so settings.lua can sit next to
+            # them.
+            xdg.configFile."hypr" = {
+              source = ./_hypr;
+              recursive = true;
+            };
 
-          xdg.configFile."hypr/settings.lua".text = ''
-            -- Generated by hyprland.nix.
-            return {
-              colors = {
-                active_border = "rgb(${colors.accent})",
-                inactive_border = "rgba(595959aa)",
-              },
+            xdg.configFile."hypr/settings.lua".text = ''
+              -- Generated by hyprland.nix.
+              return {
+                colors = {
+                  active_border = "rgb(${colors.accent})",
+                  inactive_border = "rgba(595959aa)",
+                },
 
-              apps = {
-                terminal = "${apps.terminal}",
-                browser = "${apps.browser}",
-                browser_private = "${apps.browser_private}",
-                files = "${apps.files}",
-                editor = "${apps.editor}",
-                dropdown_terminal = "${apps.dropdown_terminal}",
-              },
+                apps = {
+                  terminal = "${apps.terminal}",
+                  browser = "${apps.browser}",
+                  browser_private = "${apps.browser_private}",
+                  files = "${apps.files}",
+                  editor = "${apps.editor}",
+                  dropdown_terminal = "${apps.dropdown_terminal}",
+                },
 
-              polkit_agent = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent",
-            }
-          '';
-        }
-      ];
+                monitor_scale = ${toString config.my.hyprland.monitorScale},
+
+                polkit_agent = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent",
+              }
+            '';
+          }
+        ];
+      };
     };
 }

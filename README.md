@@ -7,7 +7,8 @@ at `~/dotfiles`; Home Manager symlinks configs straight into it.
 
 ## Setup on a new machine
 
-1. Install NixOS 26.05 from the graphical ISO with a user named `kiwi`.
+1. Install NixOS 26.05 from the graphical ISO. The user name has to match
+   `my.user` in the host's `_configuration.nix`.
 
 2. Clone both repos:
 
@@ -41,12 +42,22 @@ at `~/dotfiles`; Home Manager symlinks configs straight into it.
 
 6. Reboot.
 
+## Layout
+
+- `modules/features/`: shared NixOS modules (`base`, `desktop`, `hyprland`,
+  `dev`, `home`), exposed as `nixosModules.<name>`.
+- `modules/hosts/<name>/`: one machine. `default.nix` picks the features;
+  `_configuration.nix` holds only what is specific to that machine.
+
 ## Machine-specific settings
 
-Check these on different hardware:
+Set these in the host's `_configuration.nix`:
 
-- `_configuration.nix`: `intel-media-driver`, `systemd-boot`, `services.keyd`
-- `_hypr/monitors.lua`: monitor scale
+- `my.user`: login name of the primary user
+- `networking.hostName`
+- `my.hyprland.monitorScale`
+- `intel-media-driver`, `systemd-boot`, `services.keyd`
+- `system.stateVersion` and the Home Manager `home.stateVersion`
 
 ## Not managed by Nix
 

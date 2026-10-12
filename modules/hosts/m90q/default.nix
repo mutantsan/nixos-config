@@ -4,8 +4,11 @@
     specialArgs = { inherit inputs; };
     modules = [
       ./_configuration.nix
-      inputs.home-manager.nixosModules.home-manager
+      self.nixosModules.base
+      self.nixosModules.desktop
       self.nixosModules.hyprland
+      self.nixosModules.dev
+      self.nixosModules.home
     ];
   };
 }

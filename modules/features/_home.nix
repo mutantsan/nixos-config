@@ -20,14 +20,6 @@ let
 in
 
 {
-  home.username = "kiwi";
-  home.homeDirectory = "/home/kiwi";
-
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "25.11";
-
   home.packages = [
     pkgs.eza
     pkgs.bat
@@ -98,7 +90,7 @@ in
       name = "Papirus-Dark";
     };
 
-    # The font itself comes from fonts.packages in _configuration.nix.
+    # The font itself comes from fonts.packages in desktop.nix.
     font = {
       name = "Noto Sans";
       size = 10;
@@ -185,7 +177,7 @@ in
       "${config.home.homeDirectory}/dotfiles/bat/.config/bat/config";
 
   # Noctalia's settings GUI writes its overrides to settings.toml, layered on
-  # top of the config.toml from features/hyprland.nix. The file lives in
+  # top of the config.toml from hyprland.nix. The file lives in
   # ~/dotfiles as a plain, writable file; Noctalia writes through the symlink.
   xdg.stateFile."noctalia/settings.toml".source =
     config.lib.file.mkOutOfStoreSymlink
