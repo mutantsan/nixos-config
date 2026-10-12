@@ -55,7 +55,7 @@ in
     enableZshIntegration = true;
     settings = {
       font-family = "FiraCode Nerd Font";
-      font-size = 11;
+      font-size = 13;
       cursor-style = "block";
       cursor-style-blink = false;
       keybind = [
