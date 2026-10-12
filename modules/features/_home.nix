@@ -202,12 +202,15 @@ in
     Unit = {
       Description = "tmux default session (detached)";
       Documentation = "man:tmux(1)";
+      # Start once UWSM has exported the session environment, so the panes get
+      # WAYLAND_DISPLAY and friends; without them GUI apps started from a pane
+      # fall back to XWayland and miss the window rules.
+      After = [ "graphical-session.target" ];
       # A rebuild must not kill the running sessions.
       X-RestartIfChanged = false;
     };
     Service = {
       Type = "forking";
-      Environment = "DISPLAY=:0";
       ExecStart = "${pkgs.tmux}/bin/tmux new-session -d";
       ExecStop = [
         "${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh"
@@ -216,7 +219,7 @@ in
       KillMode = "none";
       RestartSec = 2;
     };
-    Install.WantedBy = [ "default.target" ];
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   programs.vscode = {
