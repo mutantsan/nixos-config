@@ -164,6 +164,9 @@
       # Automounting removable drives (udiskie).
       services.udisks2.enable = true;
 
+      # Nautilus needs GVfs for trash://, network locations and MTP devices.
+      services.gvfs.enable = true;
+
       environment.systemPackages = (builtins.attrValues scripts) ++ (with pkgs; [
         hyprsunset
         hyprpicker
