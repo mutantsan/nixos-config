@@ -68,6 +68,7 @@
 
     environment.systemPackages = with pkgs; [
       chromium
+      file-roller # archive manager
       loupe # image viewer
       mpv
       papers # PDF viewer
@@ -97,7 +98,19 @@
       "image/bmp"
       "image/tiff"
       "image/svg+xml"
-    ] (_: "org.gnome.Loupe.desktop") // {
+    ] (_: "org.gnome.Loupe.desktop") // lib.genAttrs [
+      "application/zip"
+      "application/x-7z-compressed"
+      "application/vnd.rar"
+      "application/x-tar"
+      "application/x-compressed-tar"
+      "application/x-bzip-compressed-tar"
+      "application/x-xz-compressed-tar"
+      "application/x-zstd-compressed-tar"
+      "application/gzip"
+      "application/x-xz"
+      "application/zstd"
+    ] (_: "org.gnome.FileRoller.desktop") // {
       "application/pdf" = "org.gnome.Papers.desktop";
     };
   };
