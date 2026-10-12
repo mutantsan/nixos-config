@@ -1,5 +1,11 @@
 { config, pkgs, inputs, ... }:
 
+let
+  jtsCore = pkgs.fetchurl {
+    url = "https://repo1.maven.org/maven2/org/locationtech/jts/jts-core/1.19.0/jts-core-1.19.0.jar";
+    hash = "sha256-27hkTPMkEj0GwnqpgvVwgR4QtMsfKu+JOwDeI30z78A=";
+  };
+in
 {
   imports = [
     ./_hardware-configuration.nix
@@ -132,7 +138,12 @@
       solr9 = {
         image = "solr:9";
         ports = [ "127.0.0.1:8983:8983" ];
-        volumes = [ "solr9-data:/var/solr" ];
+        volumes = [
+          "solr9-data:/var/solr"
+          # JTS for the spatial field types (ckanext-spatial). The image only
+          # ships it in the sql module, off the webapp classpath.
+          "${jtsCore}:/opt/solr/server/solr-webapp/webapp/WEB-INF/lib/${jtsCore.name}:ro"
+        ];
       };
     };
   };
