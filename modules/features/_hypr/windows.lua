@@ -51,8 +51,28 @@ o.window({ title = "(Picture.?in.?[Pp]icture)" }, {
 -- Prevent Telegram from stealing focus on new messages.
 o.window("org.telegram.desktop", { focus_on_activate = false })
 
--- Always open VS Code and Zed on workspace 1.
-o.window("^(code.*|com\\.microsoft\\.VSCode)$", { workspace = "1" })
+-- Open VS Code on workspace 1. Named, so o.code_here() can switch it off.
+local code_rule = hl.window_rule({
+  name = "code-workspace",
+  match = { class = "^(code.*|com\\.microsoft\\.VSCode)$" },
+  workspace = "1",
+})
+
+-- Called by hypr-code-here (../hyprland.nix) when a file is opened from another
+-- app: the next VS Code window stays on the current workspace.
+function o.code_here()
+  code_rule:set_enabled(false)
+  -- In case no window shows up.
+  hl.timer(function()
+    code_rule:set_enabled(true)
+  end, { timeout = 10000, type = "oneshot" })
+end
+
+hl.on("window.open", function(w)
+  if w.class:find("^code") or w.class == "com.microsoft.VSCode" then
+    code_rule:set_enabled(true)
+  end
+end)
 
 -- Drop-down terminal: park the "special.terminal" window on its own special
 -- workspace. Toggle with F1 (see bindings/apps.lua).

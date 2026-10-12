@@ -120,6 +120,17 @@
           '';
         };
 
+        # Opens files in a new VS Code window on the current workspace instead
+        # of workspace 1 (see o.code_here in _hypr/windows.lua).
+        codeHere = pkgs.writeShellApplication {
+          name = "hypr-code-here";
+          runtimeInputs = [ hyprland ];
+          text = ''
+            hyprctl eval 'o.code_here()' >/dev/null || true
+            exec code --new-window "$@"
+          '';
+        };
+
         closeAllWindows = pkgs.writeShellApplication {
           name = "hypr-close-all-windows";
           runtimeInputs = with pkgs; [ hyprland jq ];
@@ -156,7 +167,19 @@
         # Nautilus needs GVfs for trash://, network locations and MTP devices.
         services.gvfs.enable = true;
 
-        environment.systemPackages = (builtins.attrValues scripts) ++ (with pkgs; [
+        # Text files opened from other apps go through hypr-code-here.
+        xdg.mime.defaultApplications."text/plain" = "code-here.desktop";
+
+        environment.systemPackages = (builtins.attrValues scripts) ++ [
+          (pkgs.makeDesktopItem {
+            name = "code-here";
+            desktopName = "Visual Studio Code (current workspace)";
+            exec = "hypr-code-here %F";
+            icon = "vscode";
+            noDisplay = true;
+            mimeTypes = [ "text/plain" ];
+          })
+        ] ++ (with pkgs; [
           hyprsunset
           hyprpicker
           slurp
