@@ -202,6 +202,29 @@ in
     run-shell ${pkgs.tmuxPlugins.continuum.rtp}
   '';
 
+  # Detached tmux server, started at login. Stopping it saves the sessions
+  # with resurrect first.
+  systemd.user.services.tmux = {
+    Unit = {
+      Description = "tmux default session (detached)";
+      Documentation = "man:tmux(1)";
+      # A rebuild must not kill the running sessions.
+      X-RestartIfChanged = false;
+    };
+    Service = {
+      Type = "forking";
+      Environment = "DISPLAY=:0";
+      ExecStart = "${pkgs.tmux}/bin/tmux new-session -d";
+      ExecStop = [
+        "${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh"
+        "${pkgs.tmux}/bin/tmux kill-server"
+      ];
+      KillMode = "none";
+      RestartSec = 2;
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
   programs.vscode = {
     enable = true;
     profiles.default = {
