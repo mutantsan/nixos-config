@@ -35,6 +35,7 @@ in
     pkgs.proton-pass
     pkgs.proton-pass-cli
     pkgs.obs-studio
+    pkgs.qbittorrent
     pkgs.tmux
     pkgs.gettext # envsubst, for initckan
     pkgs.gcc # C compiler for Python sdists such as psycopg2
