@@ -62,6 +62,10 @@
     # takes icons, fonts and file dialogs from the GTK settings.
     environment.variables.QT_QPA_PLATFORMTHEME = "gtk3";
 
+    # Screen recording; the module also adds the setcap wrapper needed for
+    # promptless capture.
+    programs.gpu-screen-recorder.enable = true;
+
     environment.systemPackages = with pkgs; [
       chromium
     ];
