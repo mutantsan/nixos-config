@@ -39,6 +39,7 @@ in
     pkgs.telegram-desktop
     pkgs.slack
     pkgs.dbgate # community edition (MIT)
+    pkgs.libreoffice
     pkgs.tmux
     pkgs.gettext # envsubst, for initckan
     pkgs.gcc # C compiler for Python sdists such as psycopg2
