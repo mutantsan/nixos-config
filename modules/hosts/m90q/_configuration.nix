@@ -181,7 +181,7 @@ in
     which
     gnumake
 
-    claude-code
+    inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default
     chromium
   ];
 

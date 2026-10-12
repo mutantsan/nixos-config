@@ -25,6 +25,11 @@
       url = "github:noctalia-dev/noctalia-greeter/v1.6.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    claude-code = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake
