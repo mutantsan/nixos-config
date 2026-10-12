@@ -70,6 +70,7 @@
       chromium
       file-roller # archive manager
       loupe # image viewer
+      mcomix # comic reader; Papers can't decode WebP pages
       mpv
       papers # PDF viewer
       zenity # dialogs for apps
@@ -110,7 +111,14 @@
       "application/gzip"
       "application/x-xz"
       "application/zstd"
-    ] (_: "org.gnome.FileRoller.desktop") // {
+    ] (_: "org.gnome.FileRoller.desktop") // lib.genAttrs [
+      "application/vnd.comicbook+zip"
+      "application/vnd.comicbook-rar"
+      "application/x-cbz"
+      "application/x-cbr"
+      "application/x-cb7"
+      "application/x-cbt"
+    ] (_: "mcomix.desktop") // {
       "application/pdf" = "org.gnome.Papers.desktop";
     };
   };
