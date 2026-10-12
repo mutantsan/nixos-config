@@ -112,6 +112,18 @@ in
 
   virtualisation.docker.enable = true;
 
+  systemd.services.docker-image-prune = {
+    description = "Prune dangling docker images";
+    after = [ "docker.service" ];
+    requires = [ "docker.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${config.virtualisation.docker.package}/bin/docker image prune -f";
+    };
+    startAt = "weekly";
+  };
+  systemd.timers.docker-image-prune.timerConfig.Persistent = true;
+
   # Dev services. Units run with --rm, so anything worth keeping needs a
   # volume. Ports bind to localhost because Docker bypasses the firewall.
   virtualisation.oci-containers = {
