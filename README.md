@@ -45,7 +45,7 @@ at `~/dotfiles`; Home Manager symlinks configs straight into it.
 ## Layout
 
 - `modules/features/`: shared NixOS modules (`base`, `desktop`, `hyprland`,
-  `dev`, `home`), exposed as `nixosModules.<name>`.
+  `dev`, `gaming`, `home`), exposed as `nixosModules.<name>`.
 - `modules/hosts/<name>/`: one machine. `default.nix` picks the features;
   `_configuration.nix` holds only what is specific to that machine.
 

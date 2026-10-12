@@ -8,6 +8,7 @@
       self.nixosModules.desktop
       self.nixosModules.hyprland
       self.nixosModules.dev
+      self.nixosModules.gaming
       self.nixosModules.home
     ];
   };
