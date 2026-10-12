@@ -70,6 +70,7 @@
     environment.systemPackages = with pkgs; [
       chromium
       mpv
+      zenity # dialogs for apps
     ];
 
     # Default video player. Set system-wide (/etc/xdg/mimeapps.list) rather
