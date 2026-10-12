@@ -70,6 +70,14 @@ in
     };
   };
 
+  # Mouse cursor. Hyprland gets the theme name from _hypr/envs.lua.
+  home.pointerCursor = {
+    package = pkgs.kdePackages.breeze;
+    name = "breeze_cursors";
+    size = 24;
+    hyprcursor.enable = true;
+  };
+
   home.sessionVariables = {
     EDITOR = "nvim";
     TERMINAL = "ghostty";

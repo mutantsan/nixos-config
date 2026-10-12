@@ -55,6 +55,13 @@
         theme_mode = "dark";
       };
       keyboard.layout = "us";
+      # The greeter can't read themes from the user's home; point it at the
+      # package (it looks in <path>/share/icons).
+      cursor = {
+        theme = "breeze_cursors";
+        size = 24;
+        path = "${pkgs.kdePackages.breeze}";
+      };
     };
   };
   services.displayManager.defaultSession = "hyprland";
