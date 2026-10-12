@@ -37,6 +37,7 @@ in
     pkgs.nodejs
     pkgs.fnm
     pkgs.telegram-desktop
+    pkgs.slack
     pkgs.tmux
     pkgs.gettext # envsubst, for initckan
     pkgs.gcc # C compiler for Python sdists such as psycopg2
