@@ -68,6 +68,7 @@
 
     environment.systemPackages = with pkgs; [
       chromium
+      loupe # image viewer
       mpv
       papers # PDF viewer
       zenity # dialogs for apps
@@ -85,7 +86,18 @@
       "video/x-flv"
       "video/3gpp"
       "video/mp2t"
-    ] (_: "mpv.desktop") // {
+    ] (_: "mpv.desktop") // lib.genAttrs [
+      "image/png"
+      "image/jpeg"
+      "image/gif"
+      "image/webp"
+      "image/avif"
+      "image/heic"
+      "image/jxl"
+      "image/bmp"
+      "image/tiff"
+      "image/svg+xml"
+    ] (_: "org.gnome.Loupe.desktop") // {
       "application/pdf" = "org.gnome.Papers.desktop";
     };
   };
