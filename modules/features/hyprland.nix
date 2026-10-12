@@ -159,6 +159,7 @@
         environment.systemPackages = (builtins.attrValues scripts) ++ (with pkgs; [
           hyprsunset
           hyprpicker
+          slurp
           wl-clipboard
           libnotify
           playerctl

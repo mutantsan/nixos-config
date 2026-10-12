@@ -1,5 +1,5 @@
 { inputs, ... }: {
-  flake.nixosModules.desktop = { config, pkgs, ... }: {
+  flake.nixosModules.desktop = { config, lib, pkgs, ... }: {
     imports = [ inputs.noctalia-greeter.nixosModules.default ];
 
     # Login screen: Noctalia Greeter on greetd.
@@ -69,6 +69,23 @@
 
     environment.systemPackages = with pkgs; [
       chromium
+      mpv
     ];
+
+    # Default video player. Set system-wide (/etc/xdg/mimeapps.list) rather
+    # than in Home Manager, so ~/.config/mimeapps.list stays writable for apps
+    # that register their own URL handlers (Telegram, Slack).
+    xdg.mime.defaultApplications = lib.genAttrs [
+      "video/mp4"
+      "video/x-matroska"
+      "video/webm"
+      "video/quicktime"
+      "video/x-msvideo"
+      "video/mpeg"
+      "video/ogg"
+      "video/x-flv"
+      "video/3gpp"
+      "video/mp2t"
+    ] (_: "mpv.desktop");
   };
 }
