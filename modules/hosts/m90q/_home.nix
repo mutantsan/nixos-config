@@ -179,6 +179,11 @@ in
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles/atuin/.config/atuin/themes/everforest.toml";
 
+  # bat's config lives in ~/dotfiles, shared with the other machines.
+  xdg.configFile."bat/config".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles/bat/.config/bat/config";
+
   # Noctalia's settings GUI writes its overrides to settings.toml, layered on
   # top of the config.toml from features/hyprland.nix. The file lives in
   # ~/dotfiles as a plain, writable file; Noctalia writes through the symlink.
