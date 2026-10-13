@@ -1,4 +1,4 @@
--- Shared helpers, trimmed from Omarchy's default/hypr/helpers.lua.
+-- Shared helpers
 
 o = o or {}
 

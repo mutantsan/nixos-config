@@ -1,9 +1,5 @@
 -- Hyprland entry point (Lua config, Hyprland >= 0.55).
 --
--- Ported from Omarchy 4.0.4's default/hypr tree plus the personal overrides
--- that sat on top of it. Everything here is installed read-only by
--- ../hyprland.nix; settings.lua (colors, app commands) is generated there.
-
 -- Hyprland resolves symlinks before loading, so this file's own directory is
 -- the Nix store copy of ./_hypr, which does not hold the generated
 -- settings.lua. Search ~/.config/hypr as well.

@@ -292,6 +292,11 @@ in
   };
 
   programs.zsh.initContent = ''
+    # /etc/zshrc binds Home/End/Insert/Delete from terminfo before the
+    # keymap switches to emacs, so they land in viins (EDITOR=nvim). Bind
+    # them again in the keymap that is actually used.
+    source /etc/zinputrc
+
     # Word motions/deletes (Alt-Backspace, Alt-B/F/D) stop at punctuation, as
     # in bash, instead of treating a whole path as one word.
     WORDCHARS=""
