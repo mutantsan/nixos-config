@@ -74,6 +74,11 @@ in
       keybind = [
         "performable:ctrl+c=copy_to_clipboard"
         "ctrl+v=paste_from_clipboard"
+        # Ghostty's command palette, split-down and inspector; freed so Neovim
+        # gets the keys.
+        "ctrl+shift+p=unbind"
+        "ctrl+shift+e=unbind"
+        "ctrl+shift+i=unbind"
       ];
     };
   };
