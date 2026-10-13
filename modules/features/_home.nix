@@ -107,6 +107,35 @@ in
     # libadwaita is dark through colorScheme alone. With this stateVersion the
     # option would otherwise inherit gtk.theme and import adw-gtk3 as user CSS.
     gtk4.theme = null;
+
+    # Nord palette for libadwaita apps (Nautilus etc.), which ignore gtk.theme
+    # but take overrides of their named colours from ~/.config/gtk-4.0/gtk.css.
+    gtk4.extraCss = ''
+      @define-color window_bg_color #2e3440;
+      @define-color window_fg_color #d8dee9;
+      @define-color view_bg_color #2e3440;
+      @define-color view_fg_color #d8dee9;
+      @define-color headerbar_bg_color #2e3440;
+      @define-color headerbar_fg_color #d8dee9;
+      @define-color headerbar_backdrop_color #2e3440;
+      @define-color sidebar_bg_color #3b4252;
+      @define-color sidebar_fg_color #d8dee9;
+      @define-color sidebar_backdrop_color #3b4252;
+      @define-color popover_bg_color #3b4252;
+      @define-color popover_fg_color #d8dee9;
+      @define-color dialog_bg_color #3b4252;
+      @define-color dialog_fg_color #d8dee9;
+      @define-color card_bg_color #3b4252;
+      @define-color card_fg_color #d8dee9;
+      @define-color accent_color #88c0d0;
+      @define-color accent_bg_color #88c0d0;
+      @define-color accent_fg_color #2e3440;
+      @define-color destructive_color #bf616a;
+      @define-color destructive_bg_color #bf616a;
+      @define-color success_color #a3be8c;
+      @define-color warning_color #ebcb8b;
+      @define-color error_color #bf616a;
+    '';
   };
 
   dconf.settings."org/gnome/desktop/interface" = {
