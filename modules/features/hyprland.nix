@@ -163,6 +163,40 @@
           dconf write "$key" "$current"
         '';
       };
+
+      # Telegram reads its theme file only at startup, so a running one is
+      # restarted when Noctalia's telegram template has changed the file: back
+      # to a window if it had one, to the tray otherwise.
+      telegramReload = pkgs.writeShellApplication {
+        name = "noctalia-telegram-reload";
+        runtimeInputs = [ pkgs.coreutils pkgs.procps hyprland config.programs.uwsm.package ];
+        text = ''
+          theme="''${XDG_CONFIG_HOME:-$HOME/.config}/telegram-desktop/themes/noctalia.tdesktop-theme"
+          applied="''${XDG_CACHE_HOME:-$HOME/.cache}/noctalia/telegram-theme.applied"
+          running='(^|/)Telegram( |$)'
+
+          cmp -s "$theme" "$applied" && exit 0
+          mkdir -p "$(dirname "$applied")"
+          cp "$theme" "$applied"
+
+          pgrep -u "$UID" -f "$running" >/dev/null || exit 0
+
+          args=(-startintray)
+          clients=$(hyprctl clients -j)
+          if [[ "$clients" == *'"class": "org.telegram.desktop"'* ]]; then
+            args=()
+          fi
+
+          pkill -u "$UID" -f "$running" || true
+          for _ in $(seq 50); do
+            pgrep -u "$UID" -f "$running" >/dev/null || break
+            sleep 0.1
+          done
+
+          # Its own systemd scope, not a child of the Noctalia service.
+          uwsm app -- ${pkgs.telegram-desktop}/bin/Telegram "''${args[@]}" >/dev/null 2>&1 &
+        '';
+      };
     in
     {
       options.my.hyprland.monitorScale = lib.mkOption {
@@ -280,6 +314,15 @@
                       input_path = "${./_noctalia/chromium.json}";
                       output_path = "$XDG_CACHE_HOME/noctalia/chromium-policy.json";
                       post_hook = "${pkgs.procps}/bin/pgrep -x chromium >/dev/null && ${pkgs.chromium}/bin/chromium --refresh-platform-policy --no-startup-window || true";
+                    };
+                    # Noctalia's community template, from
+                    # api.noctalia.dev/templates/telegram. The theme has to be
+                    # picked once in Telegram: Settings > Chat Settings >
+                    # Choose from file.
+                    user.telegram = {
+                      input_path = "${./_noctalia/telegram.tdesktop-theme}";
+                      output_path = "$XDG_CONFIG_HOME/telegram-desktop/themes/noctalia.tdesktop-theme";
+                      post_hook = "${telegramReload}/bin/noctalia-telegram-reload";
                     };
                     # Theme file of the "Noctalia" VS Code extension built in
                     # _home.nix. The template is Noctalia's community one,
