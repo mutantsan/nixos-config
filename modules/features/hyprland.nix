@@ -142,6 +142,27 @@
           '';
         };
       };
+
+      # GTK4 parses ~/.config/gtk-4.0/gtk.css once, at startup, and parses it
+      # again (re-reading the noctalia.css it imports) only when the
+      # dark/light preference changes. Flip the preference and put it back, so
+      # running apps such as Nautilus pick up a palette change.
+      gtkReload = pkgs.writeShellApplication {
+        name = "noctalia-gtk-reload";
+        runtimeInputs = with pkgs; [ dconf ];
+        text = ''
+          key=/org/gnome/desktop/interface/color-scheme
+          current=$(dconf read "$key")
+          if [ "$current" = "'prefer-light'" ]; then
+            other="'prefer-dark'"
+          else
+            current="'prefer-dark'"
+            other="'prefer-light'"
+          fi
+          dconf write "$key" "$other"
+          dconf write "$key" "$current"
+        '';
+      };
     in
     {
       options.my.hyprland.monitorScale = lib.mkOption {
@@ -254,6 +275,9 @@
                     };
                   };
                 };
+
+                # Fires once the templates above are written.
+                hooks.colors_changed = "${gtkReload}/bin/noctalia-gtk-reload";
 
                 shell = {
                   font_family = font;
