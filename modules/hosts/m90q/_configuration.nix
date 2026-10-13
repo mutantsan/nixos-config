@@ -1,9 +1,11 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
     ./_hardware-configuration.nix
-  ];
+  ]
+  # Gitignored, so it is absent on a fresh clone.
+  ++ lib.optional (builtins.pathExists ./_private.nix) ./_private.nix;
 
   my.user = "kiwi";
 

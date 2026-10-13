@@ -1,0 +1,2 @@
+# Machine-local settings that must not be published.
+_private.nix
