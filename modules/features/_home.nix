@@ -42,6 +42,16 @@ in
     pkgs.libpq.pg_config # psycopg2 build needs pg_config
     pkgs.docker-sbx # sbx, Docker's sandbox CLI for agents
     tempie
+
+    # Neovim: language servers, formatters and the parser compiler. The config
+    # expects them on PATH instead of downloading them with Mason.
+    pkgs.tree-sitter # CLI, nvim-treesitter builds parsers with it
+    pkgs.lua-language-server
+    pkgs.stylua
+    pkgs.nixd
+    pkgs.nixfmt
+    pkgs.basedpyright
+    pkgs.ruff
   ];
 
   home.file = {
@@ -209,6 +219,12 @@ in
   xdg.configFile."bat/config".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles/bat/.config/bat/config";
+
+  # Neovim's config lives in ~/dotfiles, shared with the other machines. The
+  # whole directory is linked, so lazy.nvim can write lazy-lock.json into it.
+  xdg.configFile."nvim".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles/nvim/.config/nvim";
 
   # Noctalia's settings GUI writes its overrides to settings.toml, layered on
   # top of the config.toml from hyprland.nix. The file lives in
