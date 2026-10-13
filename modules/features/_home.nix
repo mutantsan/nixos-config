@@ -279,13 +279,14 @@ in
     enable = true;
     profiles.default = {
       extensions = with pkgs.vscode-extensions; [
-        bbenoist.nix
+        bbenoist.nix # Nix Language Support
         ms-python.python
         ms-python.debugpy
         ms-python.vscode-python-envs
-        charliermarsh.ruff
-        tamasfe.even-better-toml
-        arcticicestudio.nord-visual-studio-code
+        charliermarsh.ruff # Ruff
+        tamasfe.even-better-toml # Even Better Toml
+        arcticicestudio.nord-visual-studio-code # Nord Theme
+        samuelcolvin.jinjahtml # Better Jinja
       ];
     };
   };
