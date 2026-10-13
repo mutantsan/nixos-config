@@ -12,6 +12,7 @@ package.path = dir .. "/?.lua;" .. config_dir .. "/?.lua;" .. package.path
 -- require() caches modules, so drop ours or a config reload re-runs nothing.
 for _, module in ipairs({
   "settings",
+  "noctalia",
   "lib.helpers",
   "envs",
   "monitors",
@@ -32,6 +33,12 @@ require("lib.helpers")
 require("envs")
 require("monitors")
 require("looknfeel")
+
+-- Border colours from Noctalia's palette. Its hyprland theme template writes
+-- ~/.config/hypr/noctalia.lua, which is missing until the first render.
+if pcall(require, "noctalia") then
+  require("noctalia").apply_theme()
+end
 require("input")
 require("windows")
 

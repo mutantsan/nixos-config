@@ -1,7 +1,8 @@
 { inputs, ... }: {
   flake.nixosModules.hyprland = { config, pkgs, lib, ... }:
     let
-      # Nord theme
+      # Nord; only shows until Noctalia's hyprland theme template has written
+      # ~/.config/hypr/noctalia.lua (see _hypr/hyprland.lua).
       colors = {
         accent = "81a1c1";
       };
@@ -205,11 +206,62 @@
                   mode = "dark";
                   source = "builtin";
                   builtin = "Nord";
+
+                  # Apps that follow the shell's palette and dark/light mode.
+                  # Each template writes a colour file into the app's config
+                  # dir; the include that loads it is declared in this repo
+                  # (_home.nix, _hypr/hyprland.lua), since those configs are
+                  # read-only store symlinks the templates can't edit.
+                  templates = {
+                    enable_builtin_templates = true;
+                    builtin_ids = [ "ghostty" "gtk3" "gtk4" "qt" ];
+
+                    # Noctalia's own hyprland template, minus its hook: that one
+                    # only appends the require() line and leaves the running
+                    # compositor on the old colours.
+                    user.hyprland = {
+                      input_path = "${inputs.noctalia}/assets/templates/hyprland/hyprland.lua";
+                      output_path = "~/.config/hypr/noctalia.lua";
+                      post_hook = "${hyprland}/bin/hyprctl reload";
+                    };
+
+                    # CLI tools with no template of their own; the sources are
+                    # in _noctalia/. bat and eza need none: they use the
+                    # terminal's ANSI colours, which the ghostty template sets.
+                    # fzf reads the file through FZF_DEFAULT_OPTS_FILE and nvim
+                    # through its colorscheme setup in ~/dotfiles.
+                    user.fzf = {
+                      input_path = "${./_noctalia/fzf}";
+                      output_path = "$XDG_CONFIG_HOME/fzf/noctalia";
+                    };
+                    # Selected by [theme] name in ~/dotfiles' atuin config.
+                    user.atuin = {
+                      input_path = "${./_noctalia/atuin.toml}";
+                      output_path = "$XDG_CONFIG_HOME/atuin/themes/noctalia.toml";
+                    };
+                    user.nvim = {
+                      input_path = "${./_noctalia/nvim.lua}";
+                      output_path = "$XDG_DATA_HOME/nvim/noctalia.lua";
+                      # Running instances reload the palette on SIGUSR1.
+                      post_hook = "${pkgs.procps}/bin/pkill -USR1 -x nvim || true";
+                    };
+                    # Theme file of the "Noctalia" VS Code extension built in
+                    # _home.nix. The template is Noctalia's community one,
+                    # from api.noctalia.dev/templates/vscode.
+                    user.vscode = {
+                      input_path = "${./_noctalia/vscode.json}";
+                      output_path = "$XDG_CACHE_HOME/noctalia/vscode-theme.json";
+                    };
+                  };
                 };
 
                 shell = {
                   font_family = font;
                   animation.enabled = false;
+
+                  # Login screen follows the shell's palette, dark/light mode
+                  # and wallpaper (see the greeter in desktop.nix).
+                  greeter_sync.auto_sync = true;
 
                   # Every screenshot opens the annotation editor first; Done
                   # (Enter) then saves the PNG and copies it to the clipboard.

@@ -17,6 +17,39 @@ let
     nativeBuildInputs = [ pkgs.pkg-config ];
     buildInputs = [ pkgs.openssl ];
   };
+
+  # VS Code colour theme "Noctalia". The extension is only a manifest: its
+  # theme file is a link to the JSON that Noctalia's vscode template
+  # (hyprland.nix) renders, so the colours change without a rebuild.
+  noctaliaVscodeTheme = pkgs.vscode-utils.buildVscodeExtension {
+    pname = "noctalia-theme";
+    version = "1.0.0";
+    vscodeExtPublisher = "noctalia";
+    vscodeExtName = "theme";
+    vscodeExtUniqueId = "noctalia.theme";
+    sourceRoot = "noctalia-vscode-theme-src"; # the default expects an unpacked .vsix
+    src = pkgs.runCommand "noctalia-vscode-theme-src" { } ''
+      mkdir -p $out/themes
+      cp ${pkgs.writeText "package.json" (builtins.toJSON {
+        name = "theme";
+        publisher = "noctalia";
+        displayName = "Noctalia";
+        version = "1.0.0";
+        engines.vscode = "*";
+        contributes.themes = [{
+          label = "Noctalia";
+          uiTheme = "vs-dark";
+          path = "./themes/noctalia.json";
+          # Undocumented: VS Code watches the theme file and re-applies it
+          # when Noctalia rewrites it.
+          _watch = true;
+        }];
+      })} $out/package.json
+      ln -s ${config.xdg.cacheHome}/noctalia/vscode-theme.json $out/themes/noctalia.json
+    '';
+    # The link target only exists in the home directory.
+    dontCheckForBrokenSymlinks = true;
+  };
 in
 
 {
@@ -71,6 +104,9 @@ in
       font-size = 13;
       cursor-style = "block";
       cursor-style-blink = false;
+      # ~/.config/ghostty/themes/noctalia, written by Noctalia's ghostty theme
+      # template (hyprland.nix).
+      theme = "noctalia";
       keybind = [
         "performable:ctrl+c=copy_to_clipboard"
         "ctrl+v=paste_from_clipboard"
@@ -123,34 +159,12 @@ in
     # option would otherwise inherit gtk.theme and import adw-gtk3 as user CSS.
     gtk4.theme = null;
 
-    # Nord palette for libadwaita apps (Nautilus etc.), which ignore gtk.theme
-    # but take overrides of their named colours from ~/.config/gtk-4.0/gtk.css.
-    gtk4.extraCss = ''
-      @define-color window_bg_color #2e3440;
-      @define-color window_fg_color #d8dee9;
-      @define-color view_bg_color #2e3440;
-      @define-color view_fg_color #d8dee9;
-      @define-color headerbar_bg_color #2e3440;
-      @define-color headerbar_fg_color #d8dee9;
-      @define-color headerbar_backdrop_color #2e3440;
-      @define-color sidebar_bg_color #3b4252;
-      @define-color sidebar_fg_color #d8dee9;
-      @define-color sidebar_backdrop_color #3b4252;
-      @define-color popover_bg_color #3b4252;
-      @define-color popover_fg_color #d8dee9;
-      @define-color dialog_bg_color #3b4252;
-      @define-color dialog_fg_color #d8dee9;
-      @define-color card_bg_color #3b4252;
-      @define-color card_fg_color #d8dee9;
-      @define-color accent_color #88c0d0;
-      @define-color accent_bg_color #88c0d0;
-      @define-color accent_fg_color #2e3440;
-      @define-color destructive_color #bf616a;
-      @define-color destructive_bg_color #bf616a;
-      @define-color success_color #a3be8c;
-      @define-color warning_color #ebcb8b;
-      @define-color error_color #bf616a;
-    '';
+    # Colours come from Noctalia's gtk3/gtk4 theme templates (hyprland.nix),
+    # which write noctalia.css next to gtk.css whenever the palette or the
+    # dark/light mode changes. The import has to be declared here: gtk.css is a
+    # store symlink, and the template would otherwise replace it with a file.
+    gtk3.extraCss = ''@import url("noctalia.css");'';
+    gtk4.extraCss = ''@import url("noctalia.css");'';
   };
 
   dconf.settings."org/gnome/desktop/interface" = {
@@ -161,6 +175,9 @@ in
   home.sessionVariables = {
     EDITOR = "nvim";
     TERMINAL = "ghostty";
+    # Syntax colours from the terminal's palette, which Noctalia sets through
+    # its ghostty template; wins over the themes named in bat's config.
+    BAT_THEME = "ansi";
   };
 
   programs.zsh.enable = true;
@@ -212,13 +229,12 @@ in
     enableZshIntegration = true;
   };
 
-  # Atuin's config and theme live in ~/dotfiles, shared with the other machines.
+  # Atuin's config lives in ~/dotfiles, shared with the other machines. The
+  # theme it names, themes/noctalia.toml, is written by Noctalia's atuin
+  # template (hyprland.nix).
   xdg.configFile."atuin/config.toml".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles/atuin/.config/atuin/config.toml";
-  xdg.configFile."atuin/themes/everforest.toml".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/atuin/.config/atuin/themes/everforest.toml";
 
   # bat's config lives in ~/dotfiles, shared with the other machines.
   xdg.configFile."bat/config".source =
@@ -287,7 +303,7 @@ in
         tamasfe.even-better-toml # Even Better Toml
         arcticicestudio.nord-visual-studio-code # Nord Theme
         samuelcolvin.jinjahtml # Better Jinja
-      ];
+      ] ++ [ noctaliaVscodeTheme ];
     };
   };
 
@@ -326,6 +342,10 @@ in
     # Tab completion: try a prefix match first, then fall back to matching
     # anywhere in the name (`cd tab<TAB>` -> ckanext-tables).
     zstyle ':completion:*' matcher-list ''' 'l:|=* r:|=*'
+
+    # fzf colours from Noctalia's fzf template (hyprland.nix). fzf refuses to
+    # start if the file is missing, as it is until the first render.
+    [[ -r "$HOME/.config/fzf/noctalia" ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/noctalia"
 
     # No home-manager module for fnm exists yet; hook it manually.
     eval "$(fnm env --use-on-cd --shell zsh)"

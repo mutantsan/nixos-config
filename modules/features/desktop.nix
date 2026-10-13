@@ -9,10 +9,6 @@
         # Matched against the desktop entry's Name=, not its file name.
         session.default = "Hyprland (uwsm-managed)";
         user.default = config.my.user;
-        appearance = {
-          scheme = "Nord";
-          theme_mode = "dark";
-        };
         keyboard.layout = "us";
         # The greeter can't read themes from the user's home; point it at the
         # package (it looks in <path>/share/icons).
@@ -23,6 +19,9 @@
         };
       };
     };
+    # Lets the shell push its palette, mode and wallpaper to the greeter
+    # without a password prompt on every theme change.
+    services.displayManager.noctalia-greeter.passwordless-sync-users = [ config.my.user ];
     services.displayManager.defaultSession = "hyprland-uwsm";
 
     # Secret service for the Hyprland session, unlocked at login.
@@ -51,16 +50,14 @@
       noto-fonts # Noto Sans, the GTK interface font (gtk.font in _home.nix)
     ];
 
-    # Qt theming, to match the GTK setup in _home.nix. Set here rather than in
+    # Qt theming through qt5ct/qt6ct, which apply the palette Noctalia's qt
+    # template writes; their config is in _home.nix. Set here rather than in
     # Home Manager: its session variables only reach shells, not apps started
     # from Hyprland.
     qt = {
       enable = true;
-      style = "adwaita-dark";
+      platformTheme = "qt5ct";
     };
-    # Qt's built-in GTK3 platform theme (not in the qt.platformTheme enum):
-    # takes icons, fonts and file dialogs from the GTK settings.
-    environment.variables.QT_QPA_PLATFORMTHEME = "gtk3";
 
     # Screen recording; the module also adds the setcap wrapper needed for
     # promptless capture.
