@@ -189,6 +189,12 @@
         # Nautilus needs GVfs for trash://, network locations and MTP devices.
         services.gvfs.enable = true;
 
+        # Chromium policy written by Noctalia's chromium template (below), so the
+        # browser follows the shell's palette. The target is user-writable:
+        # whatever runs as that user can set any Chromium policy.
+        environment.etc."chromium/policies/managed/noctalia.json".source =
+          "${config.users.users.${config.my.user}.home}/.cache/noctalia/chromium-policy.json";
+
         # Text files opened from other apps go through hypr-code-here.
         xdg.mime.defaultApplications."text/plain" = "code-here.desktop";
 
@@ -265,6 +271,15 @@
                       output_path = "$XDG_DATA_HOME/nvim/noctalia.lua";
                       # Running instances reload the palette on SIGUSR1.
                       post_hook = "${pkgs.procps}/bin/pkill -USR1 -x nvim || true";
+                    };
+                    # Chromium's theme colour, as a managed policy: /etc links
+                    # to this file (environment.etc above). A running browser
+                    # re-reads its policies when asked to; without the pgrep
+                    # the command would start one.
+                    user.chromium = {
+                      input_path = "${./_noctalia/chromium.json}";
+                      output_path = "$XDG_CACHE_HOME/noctalia/chromium-policy.json";
+                      post_hook = "${pkgs.procps}/bin/pgrep -x chromium >/dev/null && ${pkgs.chromium}/bin/chromium --refresh-platform-policy --no-startup-window || true";
                     };
                     # Theme file of the "Noctalia" VS Code extension built in
                     # _home.nix. The template is Noctalia's community one,
