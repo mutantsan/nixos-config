@@ -164,6 +164,27 @@
         '';
       };
 
+      # Starship prints truecolour codes, so a prompt already on screen keeps
+      # the old colours. Interactive zsh shells register their PID and redraw
+      # the prompt on SIGUSR1 (_home.nix); only those get the signal, as it
+      # would kill a zsh running a script.
+      starshipReload = pkgs.writeShellApplication {
+        name = "noctalia-starship-reload";
+        text = ''
+          dir="''${XDG_RUNTIME_DIR:-/run/user/$UID}/zsh-prompts"
+          [ -d "$dir" ] || exit 0
+          for file in "$dir"/*; do
+            [ -e "$file" ] || continue
+            pid=''${file##*/}
+            if [ "$(cat "/proc/$pid/comm" 2>/dev/null)" = zsh ]; then
+              kill -USR1 "$pid" 2>/dev/null || true
+            else
+              rm -f "$file"
+            fi
+          done
+        '';
+      };
+
       # Telegram reads its theme file only at startup, so a running one is
       # restarted when Noctalia's telegram template has changed the file: back
       # to a window if it had one, to the tray otherwise.
@@ -305,6 +326,15 @@
                       output_path = "$XDG_DATA_HOME/nvim/noctalia.lua";
                       # Running instances reload the palette on SIGUSR1.
                       post_hook = "${pkgs.procps}/bin/pkill -USR1 -x nvim || true";
+                    };
+                    # A full copy of the ~/dotfiles starship config, not the
+                    # builtin palette template, whose hook would edit that
+                    # shared file. zsh points STARSHIP_CONFIG here (_home.nix);
+                    # starship re-reads it on every prompt.
+                    user.starship = {
+                      input_path = "${./_noctalia/starship.toml}";
+                      output_path = "$XDG_CACHE_HOME/noctalia/starship.toml";
+                      post_hook = "${starshipReload}/bin/noctalia-starship-reload";
                     };
                     # Chromium's theme colour, as a managed policy: /etc links
                     # to this file (environment.etc above). A running browser

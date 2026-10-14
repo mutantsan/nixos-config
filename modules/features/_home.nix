@@ -190,6 +190,7 @@ in
   };
 
   # Starship's config lives in ~/dotfiles, shared with the other machines.
+  # Here zsh uses Noctalia's themed copy of it instead (see initContent).
   xdg.configFile."starship.toml".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles/starship/.config/starship.toml";
@@ -346,6 +347,18 @@ in
     # fzf colours from Noctalia's fzf template (hyprland.nix). fzf refuses to
     # start if the file is missing, as it is until the first render.
     [[ -r "$HOME/.config/fzf/noctalia" ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/noctalia"
+
+    # Starship colours from Noctalia's starship template (hyprland.nix); the
+    # ~/dotfiles config is the fallback until the first render.
+    [[ -r "$HOME/.cache/noctalia/starship.toml" ]] && export STARSHIP_CONFIG="$HOME/.cache/noctalia/starship.toml"
+
+    # The template's hook sends SIGUSR1 to the shells registered here, so the
+    # prompt on screen is redrawn in the new colours.
+    TRAPUSR1() { zle && zle reset-prompt }
+    _prompt_pidfile="''${XDG_RUNTIME_DIR:-/run/user/$UID}/zsh-prompts/$$"
+    mkdir -p "''${_prompt_pidfile:h}" && : > "$_prompt_pidfile"
+    _prompt_unregister() { rm -f "$_prompt_pidfile" }
+    autoload -Uz add-zsh-hook && add-zsh-hook zshexit _prompt_unregister
 
     # No home-manager module for fnm exists yet; hook it manually.
     eval "$(fnm env --use-on-cd --shell zsh)"
