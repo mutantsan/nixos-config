@@ -410,6 +410,29 @@
               };
             };
 
+            # Caffeine on at login: Noctalia doesn't remember it and starts
+            # with it off. Its IPC answers only once the shell is up, so retry
+            # for a while. PartOf re-runs this when Noctalia restarts.
+            systemd.user.services.noctalia-caffeine = {
+              Unit = {
+                Description = "Enable Noctalia caffeine";
+                After = [ "noctalia.service" ];
+                PartOf = [ "noctalia.service" ];
+              };
+              Service = {
+                Type = "oneshot";
+                RemainAfterExit = true;
+                ExecStart = "${pkgs.writeShellScript "noctalia-caffeine" ''
+                  for _ in $(seq 30); do
+                    noctalia msg caffeine-enable && exit 0
+                    sleep 1
+                  done
+                  exit 1
+                ''}";
+              };
+              Install.WantedBy = [ "noctalia.service" ];
+            };
+
             services.hyprpolkitagent.enable = true;
 
             # Automounts removable drives; needs services.udisks2 above.
