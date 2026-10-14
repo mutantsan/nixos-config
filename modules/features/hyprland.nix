@@ -218,6 +218,29 @@
           uwsm app -- ${pkgs.telegram-desktop}/bin/Telegram "''${args[@]}" >/dev/null 2>&1 &
         '';
       };
+
+      # DbGate applies a theme by copying it into settings.json when it's
+      # picked, so a rewritten theme file alone changes nothing. Copy it there
+      # too while Noctalia is the selected theme.
+      dbgateApply = pkgs.writeShellApplication {
+        name = "noctalia-dbgate-apply";
+        runtimeInputs = [ pkgs.coreutils pkgs.jq ];
+        text = ''
+          theme="$HOME/.dbgate/files/themes/Noctalia.json"
+          settings="$HOME/.dbgate/settings.json"
+
+          [ -f "$settings" ] || exit 0
+          jq -e '.currentThemeDefinition.themeName == "Noctalia"' "$settings" >/dev/null || exit 0
+
+          tmp=$(mktemp "$settings.XXXXXX")
+          if jq --slurpfile theme "$theme" '.currentThemeDefinition = $theme[0]' "$settings" >"$tmp"; then
+            mv "$tmp" "$settings"
+          else
+            rm -f "$tmp"
+            exit 1
+          fi
+        '';
+      };
     in
     {
       options.my.hyprland.monitorScale = lib.mkOption {
@@ -360,6 +383,14 @@
                     user.vscode = {
                       input_path = "${./_noctalia/vscode.json}";
                       output_path = "$XDG_CACHE_HOME/noctalia/vscode-theme.json";
+                    };
+                    # Listed in DbGate's theme picker as "Noctalia". Only the
+                    # main UI variables are set; DbGate fills in the rest from
+                    # its built-in dark or light theme.
+                    user.dbgate = {
+                      input_path = "${./_noctalia/dbgate.json}";
+                      output_path = "~/.dbgate/files/themes/Noctalia.json";
+                      post_hook = "${dbgateApply}/bin/noctalia-dbgate-apply";
                     };
                   };
                 };
