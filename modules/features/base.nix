@@ -58,19 +58,19 @@
       nixpkgs.config.allowUnfree = true;
 
       environment.systemPackages = with pkgs; [
-        neovim
-        wget
-        curl
-        git
-        ripgrep
-        fd
-        zip
-        unzip
         btop
-        tree
+        curl
+        fd
         file
-        which
+        git
         gnumake
+        neovim
+        ripgrep
+        tree
+        unzip
+        wget
+        which
+        zip
       ];
     };
   };

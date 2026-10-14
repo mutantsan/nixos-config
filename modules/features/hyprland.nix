@@ -24,7 +24,6 @@
       # Under the Lua config, hyprctl only accepts Lua dispatchers
       # (hl.dsp.*), not the classic "dispatch <name> <args>" form.
       scripts = {
-
         powerMenu = pkgs.writeShellApplication {
           name = "hypr-power-menu";
           runtimeInputs = with pkgs; [ coreutils ];
@@ -62,7 +61,7 @@
 
         nightlight = pkgs.writeShellApplication {
           name = "hypr-nightlight";
-          runtimeInputs = with pkgs; [ hyprland hyprsunset libnotify procps gnugrep coreutils util-linux ];
+          runtimeInputs = with pkgs; [ coreutils gnugrep hyprland hyprsunset libnotify procps util-linux ];
           text = ''
             current() {
               hyprctl hyprsunset temperature 2>/dev/null | grep -oE '[0-9]+' | head -n1 || true
@@ -99,7 +98,7 @@
         # F1. Respawns the terminal if it was closed, so F1 always brings one back.
         dropdownTerminal = pkgs.writeShellApplication {
           name = "hypr-dropdown-terminal";
-          runtimeInputs = with pkgs; [ hyprland jq coreutils util-linux ];
+          runtimeInputs = with pkgs; [ coreutils hyprland jq util-linux ];
           text = ''
             has_window() {
               hyprctl clients -j | jq -e 'any(.[]; .class == "special.terminal")' >/dev/null
@@ -224,7 +223,7 @@
       # too while Noctalia is the selected theme.
       dbgateApply = pkgs.writeShellApplication {
         name = "noctalia-dbgate-apply";
-        runtimeInputs = [ pkgs.coreutils pkgs.jq ];
+        runtimeInputs = with pkgs; [ coreutils jq ];
         text = ''
           theme="$HOME/.dbgate/files/themes/Noctalia.json"
           settings="$HOME/.dbgate/settings.json"
@@ -239,6 +238,19 @@
             rm -f "$tmp"
             exit 1
           fi
+        '';
+      };
+
+      # Noctalia's IPC only answers once the shell is up, so retry for a while.
+      caffeineEnable = pkgs.writeShellApplication {
+        name = "noctalia-caffeine-enable";
+        runtimeInputs = with pkgs; [ coreutils ];
+        text = ''
+          for _ in $(seq 30); do
+            noctalia msg caffeine-enable && exit 0
+            sleep 1
+          done
+          exit 1
         '';
       };
     in
@@ -286,16 +298,16 @@
             mimeTypes = [ "text/plain" ];
           })
         ] ++ (with pkgs; [
-          hyprsunset
           hyprpicker
-          slurp
-          wl-clipboard
+          hyprsunset
           libnotify
-          playerctl
-          wireplumber
-          udiskie
           nautilus
           pavucontrol
+          playerctl
+          slurp
+          udiskie
+          wireplumber
+          wl-clipboard
         ]);
 
         home-manager.sharedModules = [
@@ -442,8 +454,7 @@
             };
 
             # Caffeine on at login: Noctalia doesn't remember it and starts
-            # with it off. Its IPC answers only once the shell is up, so retry
-            # for a while. PartOf re-runs this when Noctalia restarts.
+            # with it off. PartOf re-runs this when Noctalia restarts.
             systemd.user.services.noctalia-caffeine = {
               Unit = {
                 Description = "Enable Noctalia caffeine";
@@ -453,13 +464,7 @@
               Service = {
                 Type = "oneshot";
                 RemainAfterExit = true;
-                ExecStart = "${pkgs.writeShellScript "noctalia-caffeine" ''
-                  for _ in $(seq 30); do
-                    noctalia msg caffeine-enable && exit 0
-                    sleep 1
-                  done
-                  exit 1
-                ''}";
+                ExecStart = "${caffeineEnable}/bin/noctalia-caffeine-enable";
               };
               Install.WantedBy = [ "noctalia.service" ];
             };
@@ -483,7 +488,7 @@
               export XCURSOR_THEME=breeze_cursors
               export XCURSOR_SIZE=24
 
-              # Force all apps to use Wayland.
+              # Prefer Wayland, with X11 as the fallback.
               export GDK_BACKEND="wayland,x11,*"
               export QT_QPA_PLATFORM="wayland;xcb"
               export MOZ_ENABLE_WAYLAND=1

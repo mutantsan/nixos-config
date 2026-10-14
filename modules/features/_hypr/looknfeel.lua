@@ -1,4 +1,4 @@
--- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
+-- See https://wiki.hypr.land/Configuring/Basics/Variables/
 
 local colors = require("settings").colors
 

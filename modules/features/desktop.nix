@@ -28,10 +28,8 @@
     services.gnome.gnome-keyring.enable = true;
     security.pam.services.greetd.enableGnomeKeyring = true;
 
-    # Enable CUPS to print documents.
     services.printing.enable = true;
 
-    # Enable sound with pipewire.
     services.pulseaudio.enable = false;
     security.rtkit.enable = true;
     services.pipewire = {
@@ -56,8 +54,8 @@
     hardware.bluetooth.powerOnBoot = true;
 
     fonts.packages = with pkgs; [
-      nerd-fonts.jetbrains-mono
       nerd-fonts.fira-code
+      nerd-fonts.jetbrains-mono
       noto-fonts # Noto Sans, the GTK interface font (gtk.font in _home.nix)
     ];
 

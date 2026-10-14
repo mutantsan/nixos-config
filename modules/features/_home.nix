@@ -1,6 +1,12 @@
 { config, pkgs, ... }:
 
 let
+  # Configs shared with the other machines live in ~/dotfiles as plain files.
+  # Linking them out of the store keeps them writable, so apps that save their
+  # own settings (VS Code, lazy.nvim, Noctalia) write straight into the repo.
+  dotfile = path:
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/${path}";
+
   # Jira time tracking CLI, from crates.io (not in nixpkgs). To update: bump
   # version, blank both hashes, rebuild and paste the hashes Nix reports.
   tempie = pkgs.rustPlatform.buildRustPackage rec {
@@ -51,53 +57,48 @@ let
     dontCheckForBrokenSymlinks = true;
   };
 in
-
 {
-  home.packages = [
-    pkgs.eza
-    pkgs.bat
-    pkgs.jq
-    pkgs.rustup
-    pkgs.uv
-    pkgs.nodejs
-    pkgs.fnm
-    pkgs.telegram-desktop
-    pkgs.slack
-    pkgs.dbgate # community edition (MIT)
-    pkgs.libreoffice
-    pkgs.proton-pass
-    pkgs.proton-pass-cli
-    pkgs.obs-studio
-    pkgs.qbittorrent
-    pkgs.tmux
-    pkgs.gettext # envsubst, for initckan
-    pkgs.gcc # C compiler for Python sdists such as psycopg2
-    pkgs.libpq.pg_config # psycopg2 build needs pg_config
-    pkgs.docker-sbx # sbx, Docker's sandbox CLI for agents
+  home.packages = with pkgs; [
+    bat
+    dbgate # community edition (MIT)
+    docker-sbx # sbx, Docker's sandbox CLI for agents
+    eza
+    fnm
+    gcc # C compiler for Python sdists such as psycopg2
+    gettext # envsubst, for initckan
+    jq
+    libpq.pg_config # psycopg2 build needs pg_config
+    libreoffice
+    nodejs
+    obs-studio
+    proton-pass
+    proton-pass-cli
+    qbittorrent
+    rustup
+    slack
+    telegram-desktop
     tempie
+    tmux
+    uv
 
     # Neovim: language servers, formatters and the parser compiler. The config
     # expects them on PATH instead of downloading them with Mason.
-    pkgs.tree-sitter # CLI, nvim-treesitter builds parsers with it
-    pkgs.lua-language-server
-    pkgs.stylua
-    pkgs.nixd
-    pkgs.nixfmt
-    pkgs.basedpyright
-    pkgs.ruff
+    basedpyright
+    lua-language-server
+    nixd
+    nixfmt
+    ruff
+    stylua
+    tree-sitter # CLI, nvim-treesitter builds parsers with it
   ];
 
-  home.file = {
-    # XDG default-terminal spec (xdg-terminal-exec and terminal-aware apps
-    # read this to pick a terminal emulator).
-    ".config/xdg-terminals.list".text = ''
-      com.mitchellh.ghostty.desktop
-    '';
-  };
+  # Default terminal for xdg-terminal-exec and terminal-aware apps.
+  xdg.configFile."xdg-terminals.list".text = ''
+    com.mitchellh.ghostty.desktop
+  '';
 
   programs.ghostty = {
     enable = true;
-    package = pkgs.ghostty;
     enableZshIntegration = true;
     settings = {
       font-family = "FiraCode Nerd Font";
@@ -119,8 +120,7 @@ in
     };
   };
 
-  # Mouse cursor. Hyprland gets the theme name from ~/.config/uwsm/env
-  # (hyprland.nix).
+  # Hyprland gets the theme name from ~/.config/uwsm/env (hyprland.nix).
   home.pointerCursor = {
     package = pkgs.kdePackages.breeze;
     name = "breeze_cursors";
@@ -129,8 +129,8 @@ in
     gtk.enable = true;
   };
 
-  # GTK theme, icons and fonts. Written to gtk-3.0/gtk-4.0 settings.ini and to
-  # dconf, which is what the portal and Electron apps read.
+  # Written to gtk-3.0/gtk-4.0 settings.ini and to dconf, which is what the
+  # portal and Electron apps read.
   gtk = {
     enable = true;
     colorScheme = "dark";
@@ -180,25 +180,18 @@ in
     BAT_THEME = "ansi";
   };
 
-  programs.zsh.enable = true;
-  # EDITOR=nvim would otherwise make zsh pick the vi keymap.
-  programs.zsh.defaultKeymap = "emacs";
-
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
   };
 
-  # Starship's config lives in ~/dotfiles, shared with the other machines.
-  # Here zsh uses Noctalia's themed copy of it instead (see initContent).
-  xdg.configFile."starship.toml".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/starship/.config/starship.toml";
+  # zsh uses Noctalia's themed copy of this instead (see initContent).
+  xdg.configFile."starship.toml".source = dotfile "starship/.config/starship.toml";
 
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
-    # Alt-C: fuzzy-cd into any dir under $HOME (not just from $PWD)
+    # Alt-C searches every directory under $HOME, not just under $PWD.
     changeDirWidgetCommand = ''
       fd -t d --follow \
         -E .git \
@@ -230,37 +223,23 @@ in
     enableZshIntegration = true;
   };
 
-  # Atuin's config lives in ~/dotfiles, shared with the other machines. The
-  # theme it names, themes/noctalia.toml, is written by Noctalia's atuin
+  # The theme it names, themes/noctalia.toml, is written by Noctalia's atuin
   # template (hyprland.nix).
-  xdg.configFile."atuin/config.toml".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/atuin/.config/atuin/config.toml";
+  xdg.configFile."atuin/config.toml".source = dotfile "atuin/.config/atuin/config.toml";
 
-  # bat's config lives in ~/dotfiles, shared with the other machines.
-  xdg.configFile."bat/config".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/bat/.config/bat/config";
+  xdg.configFile."bat/config".source = dotfile "bat/.config/bat/config";
 
-  # Neovim's config lives in ~/dotfiles, shared with the other machines. The
-  # whole directory is linked, so lazy.nvim can write lazy-lock.json into it.
-  xdg.configFile."nvim".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/nvim/.config/nvim";
+  # The whole directory is linked, so lazy.nvim can write lazy-lock.json into it.
+  xdg.configFile."nvim".source = dotfile "nvim/.config/nvim";
 
-  # Noctalia's settings GUI writes its overrides to settings.toml, layered on
-  # top of the config.toml from hyprland.nix. The file lives in
-  # ~/dotfiles as a plain, writable file; Noctalia writes through the symlink.
+  # Noctalia's settings GUI writes its overrides here, layered on top of the
+  # config.toml from hyprland.nix.
   xdg.stateFile."noctalia/settings.toml".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/noctalia/.local/state/noctalia/settings.toml";
+    dotfile "noctalia/.local/state/noctalia/settings.toml";
 
-  # tmux.conf lives in ~/dotfiles as a plain file (shared with the Mac, where
-  # TPM loads the plugins). Here the plugins come from nixpkgs via plugins.conf,
-  # which the dotfiles config sources at its end.
-  xdg.configFile."tmux/tmux.conf".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/tmux/.config/tmux/tmux.conf";
+  # On the Mac, TPM loads the tmux plugins. Here they come from nixpkgs via
+  # plugins.conf, which the dotfiles config sources at its end.
+  xdg.configFile."tmux/tmux.conf".source = dotfile "tmux/.config/tmux/tmux.conf";
   xdg.configFile."tmux/plugins.conf".text = ''
     run-shell ${pkgs.tmuxPlugins.resurrect.rtp}
     run-shell ${pkgs.tmuxPlugins.continuum.rtp}
@@ -296,33 +275,30 @@ in
     enable = true;
     profiles.default = {
       extensions = with pkgs.vscode-extensions; [
-        bbenoist.nix # Nix Language Support
-        ms-python.python
+        arcticicestudio.nord-visual-studio-code
+        bbenoist.nix
+        charliermarsh.ruff
         ms-python.debugpy
+        ms-python.python
         ms-python.vscode-python-envs
-        charliermarsh.ruff # Ruff
-        tamasfe.even-better-toml # Even Better Toml
-        arcticicestudio.nord-visual-studio-code # Nord Theme
-        samuelcolvin.jinjahtml # Better Jinja
+        samuelcolvin.jinjahtml
+        tamasfe.even-better-toml
       ] ++ [ noctaliaVscodeTheme ];
     };
   };
 
-  # VS Code settings and keybindings live in ~/dotfiles as plain, writable JSON
-  # (shared with the Mac), so the editor's own UI can save to them.
   xdg.configFile."Code/User/settings.json".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/vscode/.config/Code/User/settings.json";
+    dotfile "vscode/.config/Code/User/settings.json";
   xdg.configFile."Code/User/keybindings.json".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles/vscode/.config/Code/User/keybindings.json";
+    dotfile "vscode/.config/Code/User/keybindings.json";
 
   programs.git = {
     enable = true;
-
-    settings.user.name = "Oleksandr Cherniavskyi";
-    settings.user.email = "kvaqich@gmail.com";
-    settings.credential.helper = "cache --timeout=86400";
+    settings = {
+      user.name = "Oleksandr Cherniavskyi";
+      user.email = "kvaqich@gmail.com";
+      credential.helper = "cache --timeout=86400";
+    };
   };
 
   programs.delta = {
@@ -330,45 +306,51 @@ in
     enableGitIntegration = true;
   };
 
-  programs.zsh.initContent = ''
-    # /etc/zshrc binds Home/End/Insert/Delete from terminfo before the
-    # keymap switches to emacs, so they land in viins (EDITOR=nvim). Bind
-    # them again in the keymap that is actually used.
-    source /etc/zinputrc
+  programs.zsh = {
+    enable = true;
+    # EDITOR=nvim would otherwise make zsh pick the vi keymap.
+    defaultKeymap = "emacs";
 
-    # Word motions/deletes (Alt-Backspace, Alt-B/F/D) stop at punctuation, as
-    # in bash, instead of treating a whole path as one word.
-    WORDCHARS=""
+    initContent = ''
+      # /etc/zshrc binds Home/End/Insert/Delete from terminfo before the
+      # keymap switches to emacs, so they land in viins (EDITOR=nvim). Bind
+      # them again in the keymap that is actually used.
+      source /etc/zinputrc
 
-    # Tab completion: try a prefix match first, then fall back to matching
-    # anywhere in the name (`cd tab<TAB>` -> ckanext-tables).
-    zstyle ':completion:*' matcher-list ''' 'l:|=* r:|=*'
+      # Word motions and deletes (Alt-Backspace, Alt-B/F/D) stop at
+      # punctuation, as in bash, instead of treating a whole path as one word.
+      WORDCHARS=""
 
-    # fzf colours from Noctalia's fzf template (hyprland.nix). fzf refuses to
-    # start if the file is missing, as it is until the first render.
-    [[ -r "$HOME/.config/fzf/noctalia" ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/noctalia"
+      # Tab completion: try a prefix match first, then fall back to matching
+      # anywhere in the name (`cd tab<TAB>` -> ckanext-tables).
+      zstyle ':completion:*' matcher-list ''' 'l:|=* r:|=*'
 
-    # Starship colours from Noctalia's starship template (hyprland.nix); the
-    # ~/dotfiles config is the fallback until the first render.
-    [[ -r "$HOME/.cache/noctalia/starship.toml" ]] && export STARSHIP_CONFIG="$HOME/.cache/noctalia/starship.toml"
+      # fzf colours from Noctalia's fzf template (hyprland.nix). fzf refuses to
+      # start if the file is missing, as it is until the first render.
+      [[ -r "$HOME/.config/fzf/noctalia" ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/noctalia"
 
-    # The template's hook sends SIGUSR1 to the shells registered here, so the
-    # prompt on screen is redrawn in the new colours.
-    TRAPUSR1() { zle && zle reset-prompt }
-    _prompt_pidfile="''${XDG_RUNTIME_DIR:-/run/user/$UID}/zsh-prompts/$$"
-    mkdir -p "''${_prompt_pidfile:h}" && : > "$_prompt_pidfile"
-    _prompt_unregister() { rm -f "$_prompt_pidfile" }
-    autoload -Uz add-zsh-hook && add-zsh-hook zshexit _prompt_unregister
+      # Starship colours from Noctalia's starship template (hyprland.nix); the
+      # ~/dotfiles config is the fallback until the first render.
+      [[ -r "$HOME/.cache/noctalia/starship.toml" ]] && export STARSHIP_CONFIG="$HOME/.cache/noctalia/starship.toml"
 
-    # No home-manager module for fnm exists yet; hook it manually.
-    eval "$(fnm env --use-on-cd --shell zsh)"
+      # The template's hook sends SIGUSR1 to the shells registered here, so the
+      # prompt on screen is redrawn in the new colours.
+      TRAPUSR1() { zle && zle reset-prompt }
+      _prompt_pidfile="''${XDG_RUNTIME_DIR:-/run/user/$UID}/zsh-prompts/$$"
+      mkdir -p "''${_prompt_pidfile:h}" && : > "$_prompt_pidfile"
+      _prompt_unregister() { rm -f "$_prompt_pidfile" }
+      autoload -Uz add-zsh-hook && add-zsh-hook zshexit _prompt_unregister
 
-    # Aliases and shell functions live in ~/dotfiles as plain shell files,
-    # shared with the other machines (stowed to ~/.config/bash there).
-    export MY_CONF_DIR="$HOME/dotfiles" # initckan reads templates/ckan.ini from it
-    for _f in "$HOME/dotfiles/bash/.config/bash/"*.sh(N); do
-      [[ -r "$_f" ]] && source "$_f"
-    done
-    unset _f
-  '';
+      # Home Manager has no fnm module yet.
+      eval "$(fnm env --use-on-cd --shell zsh)"
+
+      # Aliases and shell functions from ~/dotfiles (stowed to ~/.config/bash
+      # on the other machines).
+      export MY_CONF_DIR="$HOME/dotfiles" # initckan reads templates/ckan.ini from it
+      for _f in "$HOME/dotfiles/bash/.config/bash/"*.sh(N); do
+        [[ -r "$_f" ]] && source "$_f"
+      done
+      unset _f
+    '';
+  };
 }

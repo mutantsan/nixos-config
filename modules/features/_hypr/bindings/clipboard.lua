@@ -1,9 +1,9 @@
--- Send with explicit mods to the focused surface by omitting the window target,
--- so universal clipboard shortcuts reach both normal windows and focused
--- layer-shell surfaces. A virtual keyboard (wtype) won't do: the physically
--- held SUPER merges into the injected chord at the seat.
--- The down/up split works around Hyprland send_shortcut sometimes leaving
--- synthetic key state stuck/repeating.
+-- Sends the chord to whatever has focus (no window target), so it reaches
+-- layer-shell surfaces as well as normal windows. A virtual keyboard (wtype)
+-- won't do: the physically held SUPER merges into the injected chord.
+--
+-- Separate down and up events, because send_shortcut sometimes leaves the
+-- synthetic key stuck and repeating:
 -- https://github.com/hyprwm/Hyprland/discussions/14099
 local function send_shortcut_once(mods, key)
   return function()
@@ -15,8 +15,8 @@ local function send_shortcut_once(mods, key)
   end
 end
 
--- Lean on the terminal tag from windows.lua so there's one definition of what
--- counts as a terminal. Dynamic tags carry a trailing "*".
+-- Uses the terminal tag from windows.lua, so what counts as a terminal is
+-- defined in one place. Dynamic tags carry a trailing "*".
 local function active_window_is_terminal()
   local window = hl.get_active_window()
   if not window then
@@ -44,6 +44,4 @@ end
 
 o.bind("SUPER + C", "Universal copy", universal_clipboard_shortcut("CTRL", "C", "CTRL", "Insert"))
 o.bind("SUPER + X", "Universal cut", send_shortcut_once("CTRL", "X"))
-
--- SUPER + V opens Noctalia's clipboard panel
 o.bind("SUPER + V", "Clipboard manager", "noctalia msg panel-toggle clipboard")

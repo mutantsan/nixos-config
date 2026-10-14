@@ -1,4 +1,4 @@
--- Shared helpers
+-- Helpers shared by the other config files, on the global `o` table.
 
 o = o or {}
 
