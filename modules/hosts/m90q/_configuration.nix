@@ -13,13 +13,18 @@
 
   hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.systemd-boot.configurationLimit = 10;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot = {
+      enable = true;
+      configurationLimit = 10;
+    };
+    efi.canTouchEfiVariables = true;
+  };
 
   my.hyprland.monitorScale = 1.25;
 
-  # Fn-row -> media keys
+  # The keyboard's top row sends media keys by default; remap it to F1-F12
+  # (see _hypr/bindings/media.lua).
   services.keyd = {
     enable = true;
     keyboards.default = {
@@ -41,12 +46,9 @@
     };
   };
 
-  # The NixOS release this machine was first installed with. Do not change it
-  # on upgrade; it does not control which nixpkgs version is used.
+  # The NixOS and Home Manager releases this machine was first installed with.
+  # Some modules use them to stay compatible with data already on disk, so
+  # don't bump them when upgrading. The flake inputs choose the release.
   system.stateVersion = "26.05";
-
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
   home-manager.users.${config.my.user}.home.stateVersion = "25.11";
 }
