@@ -15,6 +15,9 @@
         options = "--delete-older-than 14d";
       };
 
+      # Compressed swap in RAM, used before the disk swap partition.
+      zramSwap.enable = true;
+
       networking.networkmanager.enable = true;
 
       time.timeZone = "Europe/Kyiv";

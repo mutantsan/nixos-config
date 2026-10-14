@@ -41,6 +41,17 @@
       pulse.enable = true;
     };
 
+    # Kill the biggest process before the system thrashes into swap; the
+    # kernel OOM killer only acts once RAM and swap are both exhausted.
+    services.earlyoom = {
+      enable = true;
+      freeMemThreshold = 5;
+      freeSwapThreshold = 10;
+      enableNotifications = true;
+    };
+    # On by default but monitors no slices; don't run two OOM daemons.
+    systemd.oomd.enable = false;
+
     hardware.bluetooth.enable = true;
     hardware.bluetooth.powerOnBoot = true;
 
