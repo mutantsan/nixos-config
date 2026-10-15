@@ -23,28 +23,9 @@
 
   my.hyprland.monitorScale = 1.25;
 
-  # The keyboard's top row sends media keys by default; remap it to F1-F12
-  # (see _hypr/bindings/media.lua).
-  services.keyd = {
-    enable = true;
-    keyboards.default = {
-      ids = [ "*" ];
-      settings.main = {
-        brightnessdown = "f1";
-        brightnessup = "f2";
-        scale = "f3";
-        dashboard = "f4";
-        kbdillumdown = "f5";
-        kbdillumup = "f6";
-        previoussong = "f7";
-        playpause = "f8";
-        nextsong = "f9";
-        mute = "f10";
-        volumedown = "f11";
-        volumeup = "f12";
-      };
-    };
-  };
+  # The QK65 identifies as an Apple keyboard, so hid_apple would turn its top
+  # row into media keys. Make plain presses send F1-F12.
+  boot.extraModprobeConfig = "options hid_apple fnmode=2";
 
   # The NixOS and Home Manager releases this machine was first installed with.
   # Some modules use them to stay compatible with data already on disk, so
