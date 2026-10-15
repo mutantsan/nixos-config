@@ -76,6 +76,12 @@
       # Extra libraries those binaries dlopen at runtime.
       programs.nix-ld.libraries = with pkgs; [
         file # libmagic, for python-magic
+
+        # GLib and Pango, for WeasyPrint.
+        fontconfig
+        glib
+        harfbuzz
+        pango
       ];
 
       environment.systemPackages = [
