@@ -56,7 +56,7 @@ Set these in the host's `_configuration.nix`:
 - `my.user`: login name of the primary user
 - `networking.hostName`
 - `my.hyprland.monitorScale`
-- `intel-media-driver`, `systemd-boot`, `services.keyd`
+- `intel-media-driver`, `systemd-boot`
 - `system.stateVersion` and the Home Manager `home.stateVersion`
 
 ## Not managed by Nix

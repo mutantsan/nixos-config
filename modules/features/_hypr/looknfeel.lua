@@ -11,11 +11,7 @@ hl.config({
     col = {
       active_border = colors.active_border,
       inactive_border = colors.inactive_border,
-    },
-
-    resize_on_border = false,
-    allow_tearing = false,
-    layout = "dwindle",
+    }
   },
 
   decoration = {
@@ -65,7 +61,6 @@ hl.config({
 
 -- Default animations, see https://wiki.hypr.land/Configuring/Advanced-and-Cool/Animations/
 hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
-hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
 hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1.0 } } })
 hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
@@ -101,16 +96,10 @@ hl.config({
     column_width = 0.49,
   },
 
-  master = {
-    new_status = "master",
-  },
-
   misc = {
     disable_hyprland_logo = true,
     disable_splash_rendering = true,
     disable_scale_notification = true,
-    -- Do not focus a window just because an application asks for it.
-    focus_on_activate = false,
     anr_missed_pings = 3,
     on_focus_under_fullscreen = 1,
     initial_workspace_tracking = 0,
@@ -124,11 +113,11 @@ hl.config({
   binds = {
     hide_special_on_workspace_change = true,
   },
+
+  ecosystem = {
+    no_update_news = true,
+  },
 })
 
--- Workspaces 1 and 4 scroll sideways (niri-style); the rest tile with dwindle.
+-- Workspace 1 scrolls sideways (niri-style); the rest tile with dwindle.
 hl.workspace_rule({ workspace = "1", layout = "scrolling" })
-hl.workspace_rule({ workspace = "4", layout = "scrolling" })
-
--- Same for the dropdown terminal, so a lone terminal fills the screen.
-hl.workspace_rule({ workspace = "special:terminal", layout = "scrolling" })

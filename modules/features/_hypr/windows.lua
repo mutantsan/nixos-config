@@ -16,16 +16,12 @@ o.window(
 )
 
 -- Terminal tag, so bindings can single terminals out (see bindings/clipboard.lua).
-o.window("(Alacritty|kitty|com.mitchellh.ghostty|foot|org\\.codeberg\\.dnkl\\.foot|wezterm|special\\.terminal)", {
-  tag = "+terminal",
-})
+o.window("(com\\.mitchellh\\.ghostty|special\\.terminal)", { tag = "+terminal" })
 
 -- Floating windows.
-o.window({ tag = "floating-window" }, { float = true })
-o.window({ tag = "floating-window" }, { center = true })
-o.window({ tag = "floating-window" }, { size = { 875, 600 } })
+o.window({ tag = "floating-window" }, { float = true, center = true, size = { 875, 600 } })
 
-o.window("(org.gnome.NautilusPreviewer|org.gnome.Evince|imv|mpv)", { tag = "+floating-window" })
+o.window("(mpv|org\\.gnome\\.Loupe)", { tag = "+floating-window" })
 
 -- The portal only ever shows dialogs (file pickers, screen shares, permission
 -- prompts), so every one of its windows floats.
@@ -47,9 +43,6 @@ o.window({ title = "(Picture.?in.?[Pp]icture)" }, {
   border_size = 0,
   move = { "(monitor_w-window_w-40)", "(monitor_h*0.04)" },
 })
-
--- Prevent Telegram from stealing focus on new messages.
-o.window("org.telegram.desktop", { focus_on_activate = false })
 
 -- Open VS Code on workspace 1. Named, so o.code_here() can switch it off.
 local code_rule = hl.window_rule({

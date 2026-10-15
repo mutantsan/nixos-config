@@ -1,5 +1,4 @@
--- Volume and media keys. keyd maps the Fn row to F1-F12 on this
--- machine, so these fire from keyboards that send the XF86 keysyms directly.
+-- Volume and media keys.
 local sink = "@DEFAULT_AUDIO_SINK@"
 local source = "@DEFAULT_AUDIO_SOURCE@"
 

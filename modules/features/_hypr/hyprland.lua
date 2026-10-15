@@ -14,7 +14,6 @@ for _, module in ipairs({
   "settings",
   "noctalia",
   "lib.helpers",
-  "envs",
   "monitors",
   "looknfeel",
   "input",
@@ -30,7 +29,6 @@ end
 
 require("lib.helpers")
 
-require("envs")
 require("monitors")
 require("looknfeel")
 

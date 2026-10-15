@@ -7,7 +7,6 @@ o.bind("SUPER + SHIFT + B", "Browser", apps.browser)
 o.bind("SUPER + SHIFT + ALT + B", "Browser (private)", apps.browser_private)
 o.bind("SUPER + SHIFT + F", "File manager", apps.files)
 o.bind("SUPER + SHIFT + N", "Editor", apps.editor)
-o.bind("SUPER + ALT + RETURN", "Tmux", apps.terminal .. " -e tmux new-session -A -s Work")
 o.bind("SUPER + CTRL + T", "Activity", apps.terminal .. " -e btop")
 
 -- Drop-down terminal on the special:terminal workspace.
@@ -15,7 +14,6 @@ o.bind("F1", "Dropdown terminal", "hypr-dropdown-terminal")
 
 -- Menus.
 o.bind("SUPER + SPACE", "Launcher", "noctalia msg panel-toggle launcher")
-o.bind("SUPER + ALT + SPACE", "Launcher", "noctalia msg panel-toggle launcher")
 o.bind("SUPER + ESCAPE", "System menu", "hypr-power-menu")
 o.bind("XF86PowerOff", "System menu", "hypr-power-menu", { locked = true })
 o.bind("SUPER + K", "Keybindings", "hypr-keybindings")
