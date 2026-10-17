@@ -11,7 +11,8 @@
 
       programs.nh = {
         enable = true;
-        flake = "/home/${config.my.user}/nixos-config";
+        # path: so the gitignored _private.nix is part of the build.
+        flake = "path:/home/${config.my.user}/nixos-config";
         clean = {
           enable = true;
           dates = "weekly";

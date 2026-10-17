@@ -73,6 +73,23 @@ Set these in the host's `_configuration.nix`:
 
 ## Rebuild
 
+With [nh](https://github.com/nix-community/nh) (flake path is preset by
+`programs.nh.flake`):
+
 ```sh
-sudo nixos-rebuild switch --flake path:/home/kiwi/nixos-config#m90q
+nh os switch        # rebuild + switch, shows a package diff (-a to confirm first)
+nh os switch -u     # update flake inputs, then switch
+nh os boot          # apply on next boot (kernel or big changes)
+nh os test          # switch now, but don't make it the boot default
+nh os rollback      # back to the previous generation
+nh os info          # list generations
+
+nh search <name>    # search nixpkgs
+nh clean all -k 3   # manual cleanup, keep 3 generations (weekly clean is automatic)
+```
+
+Without nh:
+
+```sh
+sudo nixos-rebuild switch --flake path:$HOME/nixos-config#m90q
 ```
