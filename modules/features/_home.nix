@@ -61,6 +61,7 @@ in
   home.packages = with pkgs; [
     bat
     dbgate # community edition (MIT)
+    discord
     docker-sbx # sbx, Docker's sandbox CLI for agents
     eza
     fnm
