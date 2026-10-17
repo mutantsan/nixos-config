@@ -9,10 +9,14 @@
       nix.settings.experimental-features = [ "nix-command" "flakes" ];
       nix.settings.auto-optimise-store = true;
 
-      nix.gc = {
-        automatic = true;
-        dates = "weekly";
-        options = "--delete-older-than 14d";
+      programs.nh = {
+        enable = true;
+        flake = "/home/${config.my.user}/nixos-config";
+        clean = {
+          enable = true;
+          dates = "weekly";
+          extraArgs = "--keep-since 14d --keep 5";
+        };
       };
 
       # Compressed swap in RAM, used before the disk swap partition.
