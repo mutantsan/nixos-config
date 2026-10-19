@@ -274,6 +274,20 @@ in
 
   programs.vscode = {
     enable = true;
+    # Bakes _vscode/custom.css into the workbench stylesheet.
+    # Updates checksum in product.json.
+    package = pkgs.vscode.overrideAttrs (old: {
+      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.jq pkgs.openssl ];
+      postInstall = (old.postInstall or "") + ''
+        app=$out/lib/vscode/resources/app
+        css=vs/workbench/workbench.desktop.main.css
+        cat ${./_vscode/custom.css} >> $app/out/$css
+        sum=$(openssl dgst -sha256 -binary $app/out/$css | base64 | tr -d '=')
+        jq --arg f "$css" --arg s "$sum" '.checksums[$f] = $s' \
+          $app/product.json > product.json
+        mv product.json $app/product.json
+      '';
+    });
     profiles.default = {
       extensions = with pkgs.vscode-extensions; [
         arcticicestudio.nord-visual-studio-code
@@ -305,6 +319,11 @@ in
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
+  };
+
+  programs.lazygit = {
+    enable = true;
+    settings.git.pagers = [{ pager = "delta --dark --paging=never"; }];
   };
 
   programs.zsh = {

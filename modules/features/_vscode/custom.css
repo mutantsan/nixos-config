@@ -1,0 +1,33 @@
+/* Center the quick input box and drop its rounded corners. */
+.quick-input-widget {
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.quick-input-widget .monaco-inputbox { border-radius: 0 !important; }
+
+/* Scroll bar inside the command palette. */
+.quick-input-list .scrollbar { display: none; }
+
+/* App icon in the title bar. */
+.window-appicon { display: none; }
+
+/* Watermark on the empty editor. */
+.watermark-container .letterpress { display: none; }
+
+.editor-widget.find-widget {
+  border: 1px solid #d3d3d3;
+  border-top: unset;
+  box-shadow: unset;
+}
+
+.notification-toast { box-shadow: none !important; }
+
+/* Editor actions: split, settings etc. */
+.editor-actions { display: none; }
+
+/* Agent status badge and its menu. */
+.agent-status-badge-section,
+.agent-status-badge-section .menu-entry { display: none; }
