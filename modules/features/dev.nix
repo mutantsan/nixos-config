@@ -101,6 +101,8 @@
         libxext
         libxfixes
         libxrandr
+        cairo # headed Chrome only
+        cups.lib # headed Chrome only
       ];
 
       environment.systemPackages = [
