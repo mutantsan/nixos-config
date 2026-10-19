@@ -64,6 +64,7 @@ in
     discord
     docker-sbx # sbx, Docker's sandbox CLI for agents
     eza
+    ffmpeg
     fnm
     gcc # C compiler for Python sdists such as psycopg2
     gettext # envsubst, for initckan

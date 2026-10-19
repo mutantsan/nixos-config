@@ -279,6 +279,17 @@
         # Nautilus needs GVfs for trash://, network locations and MTP devices.
         services.gvfs.enable = true;
 
+        # Codecs for Nautilus's audio/video properties tab. Its wrapper only
+        # ships base and good; the wrapper prefixes, so these still apply.
+        environment.sessionVariables.GST_PLUGIN_SYSTEM_PATH_1_0 =
+          lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" (with pkgs.gst_all_1; [
+            gst-plugins-base
+            gst-plugins-good
+            gst-plugins-bad
+            gst-plugins-ugly
+            gst-libav
+          ]);
+
         # Chromium policy written by Noctalia's chromium template (below), so the
         # browser follows the shell's palette. The target is user-writable:
         # whatever runs as that user can set any Chromium policy.

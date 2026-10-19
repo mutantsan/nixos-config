@@ -21,7 +21,10 @@
   border: 1px solid #d3d3d3;
   border-top: unset;
   box-shadow: unset;
+  border-radius: 0 !important;
 }
+/* Resize sash drawn as a line on the find widget's left edge. */
+.editor-widget.find-widget > .monaco-sash { display: none !important; }
 
 .notification-toast { box-shadow: none !important; }
 

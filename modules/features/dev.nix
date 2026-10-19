@@ -82,6 +82,25 @@
         glib
         harfbuzz
         pango
+
+        # Chromium that Playwright downloads (`playwright install chromium`).
+        alsa-lib
+        at-spi2-core # atk, atk-bridge, atspi
+        dbus
+        expat
+        libdrm
+        libgbm
+        libxkbcommon
+        nspr
+        nss
+        systemd # libudev
+        libx11
+        libxcb
+        libxcomposite
+        libxdamage
+        libxext
+        libxfixes
+        libxrandr
       ];
 
       environment.systemPackages = [
