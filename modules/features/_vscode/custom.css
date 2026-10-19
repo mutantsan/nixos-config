@@ -31,3 +31,13 @@
 /* Agent status badge and its menu. */
 .agent-status-badge-section,
 .agent-status-badge-section .menu-entry { display: none; }
+
+/* Square corners: quick input rows, the commit message box, buttons (including
+   the split Commit button) and input boxes. */
+.quick-input-list .monaco-list-row,
+.scm-view .scm-editor,
+.scm-view .scm-editor-container .monaco-editor,
+.scm-view .scm-editor-container .monaco-editor .overflow-guard,
+.monaco-button,
+.monaco-button-dropdown > .monaco-button,
+.monaco-inputbox { border-radius: 0 !important; }
