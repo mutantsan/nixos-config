@@ -24,6 +24,71 @@ let
     buildInputs = [ pkgs.openssl ];
   };
 
+  # Keep Codex independent of the nixpkgs release cadence. The CLI checks its
+  # own latest stable release, which can be newer than the package in nixpkgs.
+  codex = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "codex";
+    version = "0.163.0";
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/openai/codex/releases/download/rust-v${version}/codex-package-x86_64-unknown-linux-musl.tar.zst";
+      hash = "sha256-3yLawfJLeSfoF+ixEwZ/vhyqWGq6dVQkf6vUlGTPnJY=";
+    };
+
+    sourceRoot = ".";
+    nativeBuildInputs = [ pkgs.zstd ];
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out
+      cp -R bin codex-package.json codex-path codex-resources $out/
+      runHook postInstall
+    '';
+
+    meta = {
+      description = "Lightweight coding agent that runs in your terminal";
+      homepage = "https://github.com/openai/codex";
+      license = pkgs.lib.licenses.asl20;
+      mainProgram = "codex";
+      platforms = [ "x86_64-linux" ];
+    };
+  };
+
+  # Unity CLI (beta, not in nixpkgs): drives a running Unity Editor, used by the
+  # Claude Code unity plugin. To update: take version and the linux-x64 sha256
+  # from https://public-cdn.cloud.unity3d.com/hub/prod/cli/latest-beta.json.
+  # It dlopens OpenSSL and GSSAPI at runtime, so those go on LD_LIBRARY_PATH.
+  unity-cli = pkgs.stdenv.mkDerivation rec {
+    pname = "unity-cli";
+    version = "1.0.0-beta.13";
+
+    src = pkgs.fetchurl {
+      url = "https://public-cdn.cloud.unity3d.com/hub/prod/cli/${version}/unity-linux-x64";
+      sha256 = "a84dace1f5e85b629fff841ddfc5ec8e97fd2a178242fca91c80bc5680142fb3";
+    };
+
+    dontUnpack = true;
+    dontStrip = true; # single-file .NET bundle; stripping breaks it
+    nativeBuildInputs = [ pkgs.autoPatchelfHook pkgs.makeWrapper ];
+    buildInputs = [ pkgs.stdenv.cc.cc.lib ];
+
+    installPhase = ''
+      install -Dm755 $src $out/bin/unity
+      wrapProgram $out/bin/unity \
+        --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath [ pkgs.openssl pkgs.krb5 pkgs.icu pkgs.zlib ]}
+    '';
+  };
+
+  # UnityShaderCompiler links libtinfo.so.6. nixpkgs ncurses has that name only
+  # as a symlink to libncursesw, and the FHS env's ldconfig indexes libraries by
+  # SONAME, so the loader never finds it. Ship a copy carrying the right SONAME.
+  libtinfo6 = pkgs.runCommand "libtinfo6" { nativeBuildInputs = [ pkgs.patchelf ]; } ''
+    mkdir -p $out/lib
+    cp ${pkgs.ncurses}/lib/libncursesw.so.6 $out/lib/libtinfo.so.6
+    chmod +w $out/lib/libtinfo.so.6
+    patchelf --set-soname libtinfo.so.6 $out/lib/libtinfo.so.6
+  '';
+
   # VS Code colour theme "Noctalia". The extension is only a manifest: its
   # theme file is a link to the JSON that Noctalia's vscode template
   # (hyprland.nix) renders, so the colours change without a rebuild.
@@ -60,6 +125,7 @@ in
 {
   home.packages = with pkgs; [
     bat
+    codex
     dbgate # community edition (MIT)
     discord
     docker-sbx # sbx, Docker's sandbox CLI for agents
@@ -81,6 +147,8 @@ in
     telegram-desktop
     tempie
     tmux
+    (unityhub.override { extraPkgs = _: [ libtinfo6 ]; })
+    unity-cli
     uv
 
     # Neovim: language servers, formatters and the parser compiler. The config
