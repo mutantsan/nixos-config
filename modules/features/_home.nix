@@ -11,14 +11,14 @@ let
   # version, blank both hashes, rebuild and paste the hashes Nix reports.
   tempie = pkgs.rustPlatform.buildRustPackage rec {
     pname = "tempie";
-    version = "0.11.1";
+    version = "0.11.2";
 
     src = pkgs.fetchCrate {
       inherit pname version;
-      hash = "sha256-QWScv/t8OCCWAozDPcwERb1RRadnI2CdXR6aIxgNv1U=";
+      hash = "sha256-9LTVWHayPq8aQfAG3K+IibLSPMV/E2oP6tDL6GTLSr8=";
     };
 
-    cargoHash = "sha256-nSTs6dNT91T2C9tsIXXgiLvpHMGJ5gsnRZrFUVN/O98=";
+    cargoHash = "sha256-GRkdc8eAhJ6TC0hVBZ5pKMAAILsd7RuEr3lFvY0ptnI=";
 
     nativeBuildInputs = [ pkgs.pkg-config ];
     buildInputs = [ pkgs.openssl ];
