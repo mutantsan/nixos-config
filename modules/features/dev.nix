@@ -76,6 +76,7 @@
       # Extra libraries those binaries dlopen at runtime.
       programs.nix-ld.libraries = with pkgs; [
         file # libmagic, for python-magic
+        poppler # libpoppler-cpp, for pdftotext
 
         # GLib and Pango, for WeasyPrint.
         fontconfig
