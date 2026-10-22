@@ -108,6 +108,13 @@
 
       environment.systemPackages = [
         inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default
+        pkgs.pkg-config
+        pkgs.openssl
       ];
+
+      # Link the -dev outputs (headers, .pc files) into /run/current-system/sw
+      # so source builds outside nix (cargo, pip) can find them.
+      environment.extraOutputsToInstall = [ "dev" ];
+      environment.variables.PKG_CONFIG_PATH = "/run/current-system/sw/lib/pkgconfig";
     };
 }
