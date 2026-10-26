@@ -14,8 +14,8 @@
 
       apps = {
         terminal = "ghostty";
-        browser = "chromium";
-        browser_private = "chromium --incognito";
+        browser = "firefox";
+        browser_private = "firefox --private-window";
         files = "nautilus --new-window";
         editor = "code";
         dropdown_terminal = "ghostty --class=special.terminal";
@@ -290,12 +290,6 @@
             gst-libav
           ]);
 
-        # Chromium policy written by Noctalia's chromium template (below), so the
-        # browser follows the shell's palette. The target is user-writable:
-        # whatever runs as that user can set any Chromium policy.
-        environment.etc."chromium/policies/managed/noctalia.json".source =
-          "${config.users.users.${config.my.user}.home}/.cache/noctalia/chromium-policy.json";
-
         # Text files opened from other apps go through hypr-code-here.
         xdg.mime.defaultApplications."text/plain" = "code-here.desktop";
 
@@ -381,15 +375,6 @@
                       input_path = "${./_noctalia/starship.toml}";
                       output_path = "$XDG_CACHE_HOME/noctalia/starship.toml";
                       post_hook = "${starshipReload}/bin/noctalia-starship-reload";
-                    };
-                    # Chromium's theme colour, as a managed policy: /etc links
-                    # to this file (environment.etc above). A running browser
-                    # re-reads its policies when asked to; without the pgrep
-                    # the command would start one.
-                    user.chromium = {
-                      input_path = "${./_noctalia/chromium.json}";
-                      output_path = "$XDG_CACHE_HOME/noctalia/chromium-policy.json";
-                      post_hook = "${pkgs.procps}/bin/pgrep -x chromium >/dev/null && ${pkgs.chromium}/bin/chromium --refresh-platform-policy --no-startup-window || true";
                     };
                     # Noctalia's community template, from
                     # api.noctalia.dev/templates/telegram. The theme has to be

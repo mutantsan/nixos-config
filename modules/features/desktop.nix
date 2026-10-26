@@ -73,7 +73,7 @@
     programs.gpu-screen-recorder.enable = true;
 
     environment.systemPackages = with pkgs; [
-      chromium
+      firefox
       file-roller # archive manager
       loupe # image viewer
       mcomix # comic reader; Papers can't decode WebP pages
@@ -124,7 +124,11 @@
       "application/x-cbr"
       "application/x-cb7"
       "application/x-cbt"
-    ] (_: "mcomix.desktop") // {
+    ] (_: "mcomix.desktop") // lib.genAttrs [
+      "text/html"
+      "x-scheme-handler/http"
+      "x-scheme-handler/https"
+    ] (_: "firefox.desktop") // {
       "application/pdf" = "org.gnome.Papers.desktop";
     };
   };

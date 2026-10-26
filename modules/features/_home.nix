@@ -400,6 +400,8 @@ in
     # EDITOR=nvim would otherwise make zsh pick the vi keymap.
     defaultKeymap = "emacs";
 
+    shellAliases.ff = "fastfetch";
+
     initContent = ''
       # /etc/zshrc binds Home/End/Insert/Delete from terminfo before the
       # keymap switches to emacs, so they land in viins (EDITOR=nvim). Bind

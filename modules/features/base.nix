@@ -65,6 +65,7 @@
       environment.systemPackages = with pkgs; [
         btop
         curl
+        fastfetch
         fd
         file
         git
