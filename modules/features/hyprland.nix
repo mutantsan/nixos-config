@@ -377,6 +377,16 @@
                       post_hook = "${starshipReload}/bin/noctalia-starship-reload";
                     };
                     # Noctalia's community template, from
+                    # api.noctalia.dev/templates/pywalfox. Its post_action makes
+                    # noctalia the Pywalfox extension's native host (desktop.nix
+                    # installs the extension) and pushes the colours to every
+                    # running Firefox; restart Firefox once after the first run.
+                    user.pywalfox = {
+                      input_path = "${./_noctalia/pywalfox.json}";
+                      output_path = "$XDG_CACHE_HOME/wal/colors.json";
+                      post_action = "firefox-theme";
+                    };
+                    # Noctalia's community template, from
                     # api.noctalia.dev/templates/telegram. The theme has to be
                     # picked once in Telegram: Settings > Chat Settings >
                     # Choose from file.

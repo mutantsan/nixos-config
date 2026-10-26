@@ -72,8 +72,16 @@
     # promptless capture.
     programs.gpu-screen-recorder.enable = true;
 
+    # Pywalfox themes Firefox from Noctalia's palette (hyprland.nix).
+    programs.firefox = {
+      enable = true;
+      policies.ExtensionSettings."pywalfox@frewacom.org" = {
+        installation_mode = "force_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/pywalfox/latest.xpi";
+      };
+    };
+
     environment.systemPackages = with pkgs; [
-      firefox
       file-roller # archive manager
       loupe # image viewer
       mcomix # comic reader; Papers can't decode WebP pages
