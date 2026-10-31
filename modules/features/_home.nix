@@ -173,6 +173,7 @@ in
     settings = {
       font-family = "FiraCode Nerd Font";
       font-size = 13;
+      app-notifications = "no-clipboard-copy";
       cursor-style = "block";
       cursor-style-blink = false;
       # ~/.config/ghostty/themes/noctalia, written by Noctalia's ghostty theme
