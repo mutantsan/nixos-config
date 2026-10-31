@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, inputs, pkgs, ... }:
 
 let
   # Configs shared with the other machines live in ~/dotfiles as plain files.
@@ -24,35 +24,8 @@ let
     buildInputs = [ pkgs.openssl ];
   };
 
-  # Keep Codex independent of the nixpkgs release cadence. The CLI checks its
-  # own latest stable release, which can be newer than the package in nixpkgs.
-  codex = pkgs.stdenvNoCC.mkDerivation rec {
-    pname = "codex";
-    version = "0.163.0";
-
-    src = pkgs.fetchurl {
-      url = "https://github.com/openai/codex/releases/download/rust-v${version}/codex-package-x86_64-unknown-linux-musl.tar.zst";
-      hash = "sha256-3yLawfJLeSfoF+ixEwZ/vhyqWGq6dVQkf6vUlGTPnJY=";
-    };
-
-    sourceRoot = ".";
-    nativeBuildInputs = [ pkgs.zstd ];
-
-    installPhase = ''
-      runHook preInstall
-      mkdir -p $out
-      cp -R bin codex-package.json codex-path codex-resources $out/
-      runHook postInstall
-    '';
-
-    meta = {
-      description = "Lightweight coding agent that runs in your terminal";
-      homepage = "https://github.com/openai/codex";
-      license = pkgs.lib.licenses.asl20;
-      mainProgram = "codex";
-      platforms = [ "x86_64-linux" ];
-    };
-  };
+  # Use the maintained package from unstable while the system stays on stable.
+  unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 
   # Unity CLI (beta, not in nixpkgs): drives a running Unity Editor, used by the
   # Claude Code unity plugin. To update: take version and the linux-x64 sha256
@@ -125,7 +98,7 @@ in
 {
   home.packages = with pkgs; [
     bat
-    codex
+    unstablePkgs.codex
     dbgate # community edition (MIT)
     discord
     docker-sbx # sbx, Docker's sandbox CLI for agents
