@@ -432,6 +432,10 @@
                   };
                 };
 
+                # External monitors over DDC/CI; ddcutil and the i2c group
+                # come from the host config.
+                brightness.enable_ddcutil = true;
+
                 # Weather location.
                 location.address = "Cherkasy, Ukraine";
 

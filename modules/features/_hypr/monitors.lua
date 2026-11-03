@@ -11,6 +11,13 @@ hl.config({
   },
 })
 
+-- Pinned by description so it survives port changes.
+hl.monitor({
+  output = "desc:LG Electronics LG ULTRAGEAR 301NTAB5S768",
+  mode = "2560x1440@59.95",
+  position = "auto",
+  scale = settings.monitor_scale,
+})
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = settings.monitor_scale })
 
 -- Keep workspaces 1-5 around when empty, so the bar always shows all five.

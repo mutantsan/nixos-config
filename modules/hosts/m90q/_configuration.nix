@@ -23,6 +23,12 @@
 
   my.hyprland.monitorScale = 1.25;
 
+  # DDC/CI for the external monitor, so Noctalia's brightness slider drives
+  # its backlight (it shells out to ddcutil; see hyprland.nix).
+  hardware.i2c.enable = true;
+  environment.systemPackages = [ pkgs.ddcutil ];
+  users.users.${config.my.user}.extraGroups = [ "i2c" ];
+
   # The QK65 identifies as an Apple keyboard, so hid_apple would turn its top
   # row into media keys. Make plain presses send F1-F12.
   boot.extraModprobeConfig = "options hid_apple fnmode=2";
