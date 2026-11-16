@@ -25,7 +25,10 @@ let
   };
 
   # Use the maintained package from unstable while the system stays on stable.
-  unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  unstablePkgs = import inputs.nixpkgs-unstable {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
 
   # Unity CLI (beta, not in nixpkgs): drives a running Unity Editor, used by the
   # Claude Code unity plugin. To update: take version and the linux-x64 sha256
@@ -49,6 +52,29 @@ let
       install -Dm755 $src $out/bin/unity
       wrapProgram $out/bin/unity \
         --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath [ pkgs.openssl pkgs.krb5 pkgs.icu pkgs.zlib ]}
+    '';
+  };
+
+  # Zaku API client (not in nixpkgs), from the prebuilt GitHub release. To
+  # update: bump version, blank the hash, rebuild and paste the hash Nix
+  # reports. It dlopens EGL and Wayland, so those go on its RUNPATH.
+  zaku = pkgs.stdenv.mkDerivation rec {
+    pname = "zaku";
+    version = "26.0";
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/buildzaku/zaku/releases/download/${version}/Zaku-${version}-linux-x86_64.tar.gz";
+      hash = "sha256-Q4b6x818/okbd5QLpnw5Lmh4NckQOnIrJV1xDCblXmc=";
+    };
+
+    nativeBuildInputs = [ pkgs.autoPatchelfHook ];
+    buildInputs = with pkgs; [ stdenv.cc.cc.lib libxcb libx11 libxkbcommon ];
+    runtimeDependencies = with pkgs; [ libGL wayland ];
+
+    # The tarball's lib/ bundles X11 libraries; use the nixpkgs ones instead.
+    installPhase = ''
+      install -Dm755 libexec/zaku $out/bin/zaku
+      cp -r share $out/
     '';
   };
 
@@ -123,6 +149,7 @@ in
     (unityhub.override { extraPkgs = _: [ libtinfo6 ]; })
     unity-cli
     uv
+    zaku
 
     # Neovim: language servers, formatters and the parser compiler. The config
     # expects them on PATH instead of downloading them with Mason.
@@ -319,7 +346,7 @@ in
     enable = true;
     # Bakes _vscode/custom.css into the workbench stylesheet.
     # Updates checksum in product.json.
-    package = pkgs.vscode.overrideAttrs (old: {
+    package = unstablePkgs.vscode.overrideAttrs (old: {
       nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.jq pkgs.openssl ];
       postInstall = (old.postInstall or "") + ''
         app=$out/lib/vscode/resources/app
@@ -363,6 +390,8 @@ in
     enable = true;
     enableGitIntegration = true;
   };
+
+  programs.gh.enable = true;
 
   programs.lazygit = {
     enable = true;
